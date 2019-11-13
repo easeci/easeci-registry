@@ -1,0 +1,1 @@
+EasyCI registry service
