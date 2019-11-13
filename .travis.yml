@@ -1,0 +1,11 @@
+language: java
+install: true
+
+os:
+  - linux
+
+jdk: oraclejdk13
+
+script:
+  - ./gradlew test
+  - ./gradlew build
