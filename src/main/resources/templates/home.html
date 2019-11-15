@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="pl" xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <link href="css/style.css" rel="stylesheet">
+    <link href="webjars/bootstrap/4.3.1/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css?family=Poppins&display=swap" rel="stylesheet">
+    <script src="webjars/bootstrap/4.3.1/js/bootstrap.min.js"></script>
+    <title>EaseCI registry</title>
+</head>
+<body class="wrapper">
+<header th:insert="fragments/menu-bar.html :: header"></header>
+<div class="content-container">
+    <div>
+        <div class="text-box">
+            <h1 class="title">About Ease CI Registry</h1>
+            <p class="description">
+                The <span class="font-weight-bold">EaseCI registry</span> acts as an extension repository (or plugins, if you prefer).
+                In EaseCI, each extension is called <span class="font-weight-bold">Performer</span>.
+                The Performer is a Python script that fulfills the agreed contract (more in the "For developers" section).
+                Each plug-in is ready for manual or automatic delivery of a special entry in the Performers
+                configuration. Thanks to this, your <span class="font-weight-bold">EaseCI Core</span> instance can
+                automatically download extensions at startup, which allows you to maintain the development environment
+                in the "Infrastructure as a code" model.
+                Each script downloaded from EaseCI meets security standards and is subjected to tests and validation
+                filters before adding. Each developer can start working on the Performer and at their own discretion
+                expand EaseCI the way he likes.
+            </p>
+        </div>
+    </div>
+    <div class="image-box">
+        <img class="full-log-image" th:src="@{images/full-logo.png}"/>
+    </div>
+</div>
+<div th:insert="fragments/footer.html :: footer"></div>
+</body>
+</html>
