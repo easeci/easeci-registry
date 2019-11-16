@@ -20,10 +20,11 @@ public class FileRepresentation {
     public static class FileMeta {
         private String authorFullname;
         private String authorEmail;
+        private String company;
         private LocalDateTime creationDate;
         private String performerName;
         private String performerVersion;
         private String performerScriptChecksum;
-        private boolean validated;
+        private Boolean validated;
     }
 }

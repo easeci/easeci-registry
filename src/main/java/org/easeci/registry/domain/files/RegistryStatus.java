@@ -1,6 +1,6 @@
 package org.easeci.registry.domain.files;
 
-enum RegistryStatus {
+public enum RegistryStatus {
     NOT_FOUND,
     FOUND,
     SAVED
