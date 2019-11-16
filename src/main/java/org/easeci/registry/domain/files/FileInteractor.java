@@ -3,7 +3,7 @@ package org.easeci.registry.domain.files;
 import java.util.List;
 import java.util.Map;
 
-public interface FileInteractor {
+interface FileInteractor {
 
     /**
      * This method can persist Performer developed and uploaded by
