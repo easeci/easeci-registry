@@ -1,13 +1,16 @@
 package org.easeci.registry.domain.files;
 
+import org.springframework.stereotype.Service;
+
 import java.util.List;
 import java.util.Map;
 
+@Service
 class FileInteractorImpl implements FileInteractor {
 
     @Override
     public RegistryStatus persist(FileRepresentation fileRepresentation) {
-        return null;
+        return RegistryStatus.SAVED;
     }
 
     @Override

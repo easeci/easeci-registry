@@ -24,7 +24,7 @@ public class FileRepresentation {
         private LocalDateTime creationDate;
         private String performerName;
         private String performerVersion;
-        private String performerScriptChecksum;
+        private long performerScriptBytes;
         private Boolean validated;
     }
 }

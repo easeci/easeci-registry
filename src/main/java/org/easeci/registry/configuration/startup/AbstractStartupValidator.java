@@ -5,6 +5,7 @@ import org.springframework.beans.factory.annotation.Value;
 
 import java.io.IOException;
 import java.nio.file.AccessDeniedException;
+import java.nio.file.FileAlreadyExistsException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 
@@ -22,6 +23,8 @@ abstract class AbstractStartupValidator implements StartupValidator {
         } catch (AccessDeniedException e) {
             log.error("User " + username + " has no rights to resources in: '" + storage + "'.\n" +
                     "Please grant privileges or run with another user with read/write rights");
+        } catch (FileAlreadyExistsException e) {
+            log.info("Access to resources in " + storage + " correctly assigned");
         } catch (IOException e) {
             e.printStackTrace();
         }
