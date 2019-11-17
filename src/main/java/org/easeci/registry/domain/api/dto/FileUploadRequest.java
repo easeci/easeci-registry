@@ -4,7 +4,6 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import org.springframework.web.multipart.MultipartFile;
 
 @Getter
 @Builder
@@ -16,5 +15,5 @@ public class FileUploadRequest {
     private String company;
     private String performerName;
     private String performerVersion;
-    private MultipartFile multipartFile;
+    private byte[] multipartFile;
 }

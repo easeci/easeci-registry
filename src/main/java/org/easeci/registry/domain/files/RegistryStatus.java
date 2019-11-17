@@ -2,6 +2,8 @@ package org.easeci.registry.domain.files;
 
 public enum RegistryStatus {
     NOT_FOUND,
+    INVALID_REJECTED,
     FOUND,
-    SAVED
+    SAVED,
+    JUST_PROCESSING
 }

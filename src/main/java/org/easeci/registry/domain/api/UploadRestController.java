@@ -9,6 +9,8 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import reactor.core.publisher.Mono;
 
+import java.io.IOException;
+
 @RestController
 @AllArgsConstructor
 @RequestMapping("/api/v1/upload")
@@ -17,12 +19,12 @@ class UploadRestController {
 
     @PostMapping("/performer")
     @ResponseStatus(HttpStatus.OK)
-    Mono<FileUploadResponse> uploadPerformer(@RequestHeader("author-fullname") String authorFullname,
+    Mono<FileUploadResponse> uploadPerformer(@RequestParam("file") MultipartFile multipartFile,
+                                             @RequestHeader("author-fullname") String authorFullname,
                                              @RequestHeader("author-email") String authorEmail,
                                              @RequestHeader("author-company") String company,
                                              @RequestHeader("performer-name") String performerName,
-                                             @RequestHeader("performer-version") String performerVersion,
-                                             @RequestParam("script") MultipartFile multipartFile) {
+                                             @RequestHeader("performer-version") String performerVersion) throws IOException {
 
         return filesFacadeService.uploadProcess(FileUploadRequest.builder()
                         .authorFullname(authorFullname)
@@ -30,7 +32,7 @@ class UploadRestController {
                         .company(company)
                         .performerName(performerName)
                         .performerVersion(performerVersion)
-                        .multipartFile(multipartFile)
+                        .multipartFile(multipartFile.getBytes())
                         .build());
     }
 }
