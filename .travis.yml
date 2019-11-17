@@ -7,4 +7,5 @@ os:
 jdk: oraclejdk11
 
 script:
-  - ./gradlew build
+  - bash before-tests.sh
+  - ./gradlew build --info
