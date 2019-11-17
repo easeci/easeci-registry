@@ -5,5 +5,10 @@ public enum RegistryStatus {
     INVALID_REJECTED,
     FOUND,
     SAVED,
+    SAVE_FAILED,
+    FILE_JUST_EXISTS,
+    DIR_JUST_EXISTS,
+    CREATED,
+    CREATION_FAILED,
     JUST_PROCESSING
 }
