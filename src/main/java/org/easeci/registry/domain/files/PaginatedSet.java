@@ -3,13 +3,13 @@ package org.easeci.registry.domain.files;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 
-import java.util.Set;
+import java.util.Collection;
 
 @Getter
 @AllArgsConstructor
 public class PaginatedSet<T> {
-    private Set<T> paginatedSet;
-    private int elements;
+    private Collection<T> paginatedCollection;
+    private int elementsOnPage;
     private int page;
-    private int pages;
+    private int allPages;
 }

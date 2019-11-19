@@ -7,6 +7,7 @@ import org.springframework.stereotype.Service;
 import reactor.core.publisher.Mono;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Service
 @AllArgsConstructor
@@ -38,5 +39,18 @@ public class FilesFacadeService {
                         .status(RegistryStatus.INVALID_REJECTED)
                         .meta(null)
                         .build());
+    }
+
+    public PaginatedSet<FileRepresentation.FileMeta> findByPage(int page) {
+        PageRequest pageRequest = PageRequest.of(page);
+        return fileInteractor.listAll(pageRequest);
+    }
+
+    public List<FileRepresentation.FileMeta> getAllVersionsByName(String performerName) {
+        return fileInteractor.get(performerName);
+    }
+
+    public String getDescription(String performerName) {
+        return "";
     }
 }

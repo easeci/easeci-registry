@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="UTF-8">
+    <link href="css/style.css" rel="stylesheet">
+    <link href="css/style-performer-view.css" rel="stylesheet">
+    <link href="webjars/bootstrap/4.3.1/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css?family=Poppins&display=swap" rel="stylesheet">
+    <script src="webjars/bootstrap/4.3.1/js/bootstrap.min.js"></script>
+    <title>EaseCI performer</title>
+</head>
+<body class="wrapper">
+    <header th:insert="fragments/menu-bar.html :: header"></header>
+    <div class="performer-view-container">
+        <div>
+            <h1 th:text="${performerName}"></h1>
+            <div class="about">
+                <span style="font-weight: bold">About</span>
+                <p th:text="${performerDescription}"></p>
+            </div>
+        </div>
+        <ul th:each="version : ${versions}">
+            <li class="performer-li-row">
+                <div style="display: flex">
+                    <div class="performer-meta-data-container">
+                        <p th:text="'v.' + ${version.performerVersion}"></p>
+                        <p th:text="'Release date: ' + ${version.creationDate}"></p>
+                        <p th:text="'Size [bytes]: ' + ${version.performerScriptBytes}"></p>
+                        <p th:text="'Documentation: '"><a th:href="${version.documentationUrl}" th:text="${version.documentationUrl}"></a></p>
+                        <p th:text="'Secure: ' + (${version.validated}? 'yes' : 'no')"></p>
+                    </div>
+                    <div class="download-link-container">
+                        <a href="#">Download <img th:src="@{images/download.svg}"></a>
+                    </div>
+                </div>
+            </li>
+        </ul>
+    </div>
+    <div th:insert="fragments/footer.html :: footer"></div>
+</body>
+</html>

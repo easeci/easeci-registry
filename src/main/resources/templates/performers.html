@@ -1,8 +1,9 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" xmlns:th="http://www.w3.org/1999/xhtml">
 <head>
     <meta charset="UTF-8">
     <link href="css/style.css" rel="stylesheet">
+    <link href="css/style-performers.css" rel="stylesheet">
     <link href="webjars/bootstrap/4.3.1/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css?family=Poppins&display=swap" rel="stylesheet">
     <script src="webjars/bootstrap/4.3.1/js/bootstrap.min.js"></script>
@@ -10,7 +11,32 @@
 </head>
 <body class="wrapper">
     <header th:insert="fragments/menu-bar.html :: header"></header>
-
+    <div class="content">
+        <p class="transparent-text">
+            In this section you can view and download Performers - additional features for EaseCI Core.
+        </p>
+        <div class="performers-list-section">
+            <div class="performer-cell">
+                <div class="performer-info">
+                    <table class="performer-info-table">
+                        <tbody>
+                            <tr th:each="performer : ${performers}">
+                                <td style="width: 200px" th:text="${{performer.authorFullname}}">Performer name:</td>
+                                <td style="width: 200px; font-weight: bold" th:text="${{performer.performerName}}"></td>
+                                <td style="width: 110px;">
+                                    <form action="#" th:action="@{/view}" th:object="${performerName}" method="post">
+                                        <input type="hidden" id="performerName" name="performerName" th:value="${performer.performerName}" />
+                                        <input class="btn btn-outline-info" type="submit" value="Show" />
+                                        <img class="box-icon" th:src="@{images/box.svg}" data-toggle="tooltip" data-placement="top" th:title="'Size [bytes]: ' + ${performer.performerScriptBytes}">
+                                    </form>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
     <div th:insert="fragments/footer.html :: footer"></div>
 </body>
 </html>

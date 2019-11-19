@@ -1,6 +1,5 @@
 .wrapper {
     width: 70%;
-    margin-top: 3px;
     margin: 0 auto;
     font-family: 'Poppins', sans-serif;
 }
@@ -13,7 +12,7 @@
 
 .content-container {
     display: flex;
-    margin-top: 20px;
+    margin-top: 10vh;
 }
 
 .content-container > div {
@@ -28,7 +27,6 @@
 }
 
 .full-log-image {
-    margin-top: 33px;
     width: 270px;
     height: auto;
 }

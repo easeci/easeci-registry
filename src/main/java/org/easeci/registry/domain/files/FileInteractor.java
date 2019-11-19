@@ -20,6 +20,12 @@ interface FileInteractor {
     FileRepresentation get(Map<String, String> params);
 
     /**
+     * This method is created for fetching and presenting data on frontend
+     * By `performerName` you can get details about Performer.
+     * */
+    List<FileRepresentation.FileMeta> get(String performerName);
+
+    /**
      * This method lists all available versions of Performer specified
      * by name provided as method argument
      * */

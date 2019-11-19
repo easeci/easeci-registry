@@ -1,0 +1,55 @@
+.content {
+    margin-top: 1vh;
+}
+
+.transparent-text {
+    font-weight: lighter;
+    font-size: 13px;
+    color: #0000006b;
+}
+
+.performers-list-section {
+    border-top: 1px solid rgba(147, 217, 248, 0.5490196078431373);
+    border-bottom: 1px solid rgba(147, 217, 248, 0.5490196078431373);
+    padding-top: 15px;
+    padding-bottom: 15px;
+}
+
+.performer-cell {
+    display: flex;
+    margin-top: 10px;
+}
+
+.performer-info {
+    width: 80%;
+}
+
+.performer-download {
+    width: 20%;
+}
+
+.performer-download-button {
+    display: block;
+    padding-left: 5px;
+    margin-top: 8%;
+}
+
+.performer-download-button:hover img {
+    color: aquamarine;
+    cursor: pointer;
+}
+
+.performer-info-table {
+    width: 100%;
+    font-size: 12px;
+    color: #445668de;
+}
+
+tr:hover {
+    background-color: #ceeeff40;
+}
+
+.box-icon:hover {
+    color: #5fa59d;
+    cursor: help;
+}

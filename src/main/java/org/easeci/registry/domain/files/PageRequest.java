@@ -1,17 +1,17 @@
 package org.easeci.registry.domain.files;
 
-import lombok.AllArgsConstructor;
 import lombok.Getter;
 
 @Getter
-@AllArgsConstructor
 public class PageRequest {
-    private int elements;
-    private int page;
-    private SortDirection sortDirection;
-}
+    private final int PAGE_SIZE = 10;
+    private long page;
 
-enum SortDirection {
-    ASC,
-    DESC
+    private PageRequest(long page) {
+        this.page = page;
+    }
+
+    public static PageRequest of(long page) {
+        return new PageRequest(page);
+    }
 }

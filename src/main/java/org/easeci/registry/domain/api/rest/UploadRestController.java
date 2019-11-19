@@ -1,4 +1,4 @@
-package org.easeci.registry.domain.api;
+package org.easeci.registry.domain.api.rest;
 
 import lombok.AllArgsConstructor;
 import org.easeci.registry.domain.api.dto.FileUploadRequest;
