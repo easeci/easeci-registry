@@ -13,7 +13,8 @@ public class FileRepresentation {
     private FileMeta meta;
     private byte[] payload;
 
-    @Getter
+    @ToString
+    @Data
     @Builder
     @NoArgsConstructor
     @AllArgsConstructor
@@ -25,6 +26,7 @@ public class FileRepresentation {
         private String performerName;
         private String performerVersion;
         private long performerScriptBytes;
+        private String documentationUrl;
         private Boolean validated;
     }
 }

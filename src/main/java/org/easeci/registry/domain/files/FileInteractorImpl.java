@@ -76,6 +76,11 @@ class FileInteractorImpl implements FileInteractor {
     }
 
     @Override
+    public List<FileRepresentation.FileMeta> get(String performerName) {
+        return null;
+    }
+
+    @Override
     public List<FileRepresentation.FileMeta> listByName(String performer) {
         return null;
     }

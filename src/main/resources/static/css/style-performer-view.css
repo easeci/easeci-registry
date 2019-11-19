@@ -1,0 +1,31 @@
+.performer-view-container {
+    margin-top: 20px;
+    color: #000000a1;
+}
+
+.about {
+    margin-top: 20px;
+    margin-bottom: 20px;
+    text-align: justify;
+}
+
+.performer-meta-data-container {
+    width: 50%;
+}
+
+.download-link-container {
+    width: 50%;
+    text-align: center;
+}
+
+.performer-li-row {
+    padding: 7px;
+}
+
+.performer-li-row:hover {
+    background-color: #ceeeff40;
+}
+
+ul {
+    list-style-type: none;
+}
