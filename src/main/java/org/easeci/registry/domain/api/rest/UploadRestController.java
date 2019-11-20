@@ -3,7 +3,7 @@ package org.easeci.registry.domain.api.rest;
 import lombok.AllArgsConstructor;
 import org.easeci.registry.domain.api.dto.FileUploadRequest;
 import org.easeci.registry.domain.api.dto.FileUploadResponse;
-import org.easeci.registry.domain.files.FilesFacadeService;
+import org.easeci.registry.domain.files.PerformerManagerService;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -15,7 +15,7 @@ import java.io.IOException;
 @AllArgsConstructor
 @RequestMapping("/api/v1/upload")
 class UploadRestController {
-    private FilesFacadeService filesFacadeService;
+    private PerformerManagerService filesFacadeService;
 
     @PostMapping("/performer")
     @ResponseStatus(HttpStatus.OK)

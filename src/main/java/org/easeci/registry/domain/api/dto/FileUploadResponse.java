@@ -1,14 +1,12 @@
 package org.easeci.registry.domain.api.dto;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import org.easeci.registry.domain.files.FileRepresentation;
 import org.easeci.registry.domain.files.RegistryStatus;
 
 @Data
 @Builder
+@ToString
 @NoArgsConstructor
 @AllArgsConstructor
 public class FileUploadResponse {
