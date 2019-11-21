@@ -10,8 +10,7 @@ import org.springframework.test.context.ActiveProfiles;
 
 import static org.easeci.registry.utils.CommonUtils.factorizeFileUploadRequest;
 import static org.easeci.registry.utils.CommonUtils.factorizeFileUploadRequestNextVersion;
-import static org.junit.jupiter.api.Assertions.assertAll;
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.*;
 
 @SpringBootTest
 @ActiveProfiles({ "test" })
@@ -56,6 +55,38 @@ class PerformerManagerServiceTest {
                 () -> assertEquals(fileUploadRequest.getAuthorFullname(), performerEntity.getAuthorFullname()),
                 () -> assertEquals(fileUploadRequest.getCompany(), performerEntity.getCompany()),
                 () -> assertEquals(2, performerEntity.getPerformerVersions().size()));
+    }
+
+    @Test
+    @DisplayName("Should not save entity and should not override file when trying to upload" +
+            " the same request twice")
+    void shouldNotSave() {
+        FileUploadRequest fileUploadRequest = factorizeFileUploadRequest();
+
+        performerManagerService.uploadProcess(fileUploadRequest).subscribe();
+        performerManagerService.uploadProcess(fileUploadRequest)
+                .subscribe(fileUploadResponse -> {
+                    assertEquals(RegistryStatus.INVALID_REJECTED, fileUploadResponse.getStatus());
+                    assertNull(fileUploadResponse.getMeta());
+                });
+    }
+
+    @Test
+    @DisplayName("Should get page correctly with few elements in repository")
+    void shouldGetPage() {
+        final int page = 0;
+        final int size = 10;
+        FileUploadRequest fileUploadRequest = factorizeFileUploadRequest();
+        FileUploadRequest fileUploadRequestNext = factorizeFileUploadRequestNextVersion();
+
+        performerManagerService.uploadProcess(fileUploadRequest).subscribe();
+        performerManagerService.uploadProcess(fileUploadRequestNext).subscribe();
+
+        performerManagerService.getPerformerPage(page, size)
+                .subscribe(performerEntities -> {
+                    assertEquals(1, performerEntities.getTotalElements());
+                    assertEquals(1, performerEntities.getTotalPages());
+                });
     }
 
     @AfterEach
