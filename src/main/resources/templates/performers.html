@@ -18,17 +18,17 @@
         <div class="performers-list-section">
             <div class="performer-cell">
                 <div class="performer-info">
+                    <div th:if="${page.content.size()} == 0">
+                        <p class="error-text">There is no performers yet.</p>
+                    </div>
                     <table class="performer-info-table">
                         <tbody>
-                            <tr th:each="performer : ${performers}">
+                            <tr th:each="performer : ${page.content}">
                                 <td style="width: 200px" th:text="${{performer.authorFullname}}">Performer name:</td>
                                 <td style="width: 200px; font-weight: bold" th:text="${{performer.performerName}}"></td>
                                 <td style="width: 110px;">
-                                    <form action="#" th:action="@{/view}" th:object="${performerName}" method="post">
-                                        <input type="hidden" id="performerName" name="performerName" th:value="${performer.performerName}" />
-                                        <input class="btn btn-outline-info" type="submit" value="Show" />
-                                        <img class="box-icon" th:src="@{images/box.svg}" data-toggle="tooltip" data-placement="top" th:title="'Size [bytes]: ' + ${performer.performerScriptBytes}">
-                                    </form>
+                                    <a class="btn btn-outline-info" th:href="@{'/performer/' + ${performer.performerName}}">Show</a>
+                                    <img class="box-icon" th:src="@{images/box.svg}" data-toggle="tooltip" data-placement="top" th:title="'Versions amount: ' + ${performer.performerVersions.size()}">
                                 </td>
                             </tr>
                         </tbody>
@@ -36,7 +36,30 @@
                 </div>
             </div>
         </div>
+        <div class="pagination-container" th:with="current_page = ${page.number}">
+            <nav aria-label="Performers pagination">
+                <ul class="pagination">
+                    <li class="page-item">
+                        <a class="page-link" th:href="@{'/performers?page=' + ${current_page}}" aria-label="Previous">
+                            <span aria-hidden="true">&laquo;</span>
+                            <span class="sr-only">Previous</span>
+                        </a>
+                    </li>
+                    <span th:each="pageNum : ${#numbers.sequence(1, page.totalPages)}">
+                        <li class="page-item">
+                            <a class="page-link" th:href="@{'/performers?page=' + ${pageNum}}" th:text="${pageNum}"></a>
+                        </li>
+                    </span>
+                    <li class="page-item">
+                        <a class="page-link" th:href="@{'/performers?page=' + ${current_page + 2}}" aria-label="Next">
+                            <span aria-hidden="true">&raquo;</span>
+                            <span class="sr-only">Next</span>
+                        </a>
+                    </li>
+                </ul>
+            </nav>
+        </div>
     </div>
-    <div th:insert="fragments/footer.html :: footer"></div>
+    <div class="footer" th:insert="fragments/footer.html :: footer"></div>
 </body>
 </html>

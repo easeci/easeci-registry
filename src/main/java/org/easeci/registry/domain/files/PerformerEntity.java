@@ -52,4 +52,5 @@ class PerformerVersionEntity {
     private long performerScriptBytes;
     private Boolean validated;
     private LocalDateTime releaseDate;
+    private String documentationUrl;
 }

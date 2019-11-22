@@ -1,11 +1,13 @@
 package org.easeci.registry.domain.files;
 
+import org.easeci.registry.domain.files.dto.PerformerVersionResponse;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 
 import java.util.Optional;
+import java.util.Set;
 
 interface PerformerRepository extends JpaRepository<PerformerEntity, Long> {
 
@@ -22,4 +24,14 @@ interface PerformerRepository extends JpaRepository<PerformerEntity, Long> {
     int isVersionExists(String performerName, String performerVersion);
 
     Page<PerformerEntity> findAll(Pageable pageable);
+
+    @Query("select new org.easeci.registry.domain.files.dto.PerformerVersionResponse(pve.versionId, pve.performerVersion, " +
+            "pve.performerScriptBytes, pve.validated, pve.releaseDate, pve.documentationUrl) " +
+            "from PerformerEntity e inner join PerformerVersionEntity pve " +
+            "on e.performerId = pve.performer.performerId " +
+            "where e.performerName = ?1")
+    Set<PerformerVersionResponse> findAllVersionByName(String performerName);
+
+    @Query(value = "select description from performer where performer_name = ?1", nativeQuery = true)
+    String findDescription(String performerName);
 }
