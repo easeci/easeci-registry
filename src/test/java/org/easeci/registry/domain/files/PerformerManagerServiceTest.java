@@ -1,5 +1,7 @@
 package org.easeci.registry.domain.files;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.easeci.registry.domain.api.dto.FileUploadRequest;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.DisplayName;
@@ -86,6 +88,26 @@ class PerformerManagerServiceTest {
                 .subscribe(performerEntities -> {
                     assertEquals(1, performerEntities.getTotalElements());
                     assertEquals(1, performerEntities.getTotalPages());
+                });
+    }
+
+    @Test
+    @DisplayName("Should get all versions of Performer by specified name with success")
+    void shouldGetAllVersions() {
+        FileUploadRequest fileUploadRequest = factorizeFileUploadRequest();
+        FileUploadRequest fileUploadRequestNext = factorizeFileUploadRequestNextVersion();
+
+        performerManagerService.uploadProcess(fileUploadRequest).subscribe();
+        performerManagerService.uploadProcess(fileUploadRequestNext).subscribe();
+
+        performerManagerService.getAllVersionsByName(fileUploadRequest.getPerformerName())
+                .subscribe(versions -> {
+                    assertEquals(2, versions.size());
+                    versions.stream()
+                            .peek(performerVersion ->
+                                    assertTrue(performerVersion.getPerformerVersion().equals(fileUploadRequest.getPerformerVersion()) ||
+                                            performerVersion.getPerformerVersion().equals(fileUploadRequestNext.getPerformerVersion())))
+                            .close();
                 });
     }
 

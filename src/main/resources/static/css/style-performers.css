@@ -53,3 +53,12 @@ tr:hover {
     color: #5fa59d;
     cursor: help;
 }
+
+.pagination-container {
+    margin-top: 7px;
+}
+
+.error-text {
+    text-align: center;
+    color: #ff000080;
+}

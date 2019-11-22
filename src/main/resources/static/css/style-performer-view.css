@@ -29,3 +29,9 @@
 ul {
     list-style-type: none;
 }
+
+.download-button {
+    padding: 6px;
+    border: 1px solid #007bff;
+    border-radius: 6px;
+}
