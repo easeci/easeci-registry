@@ -118,4 +118,8 @@ public class PerformerManagerService {
     public String getDescription(String performerName) {
         return performerRepository.findDescription(performerName);
     }
+
+    public byte[] findFile(String performerName, String performerVersion) {
+        return fileInteractor.get(performerName, performerVersion).getPayload();
+    }
 }
