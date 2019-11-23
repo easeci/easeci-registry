@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="UTF-8">
+    <link href="../css/style.css" rel="stylesheet">
+    <link href="../css/style-development.css" rel="stylesheet">
+    <link href="../webjars/bootstrap/4.3.1/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css?family=Poppins&display=swap" rel="stylesheet">
+    <script src="../webjars/bootstrap/4.3.1/js/bootstrap.min.js"></script>
+    <title>EaseCI development</title>
+</head>
+<body class="wrapper">
+<header th:insert="fragments/menu-bar.html :: header"></header>
+
+<div class="wrapper">
+    <h3>Upload Performer Python script</h3>
+    <div th:if="${isDataAdded == 'false'}">
+        <form class="send-form" action="#" th:action="@{/performer/upload}" th:object="${request}" method="POST">
+            <label for="fullname">Author full name</label>
+            <input type="text" th:field="${request.authorFullname}" id="fullname">
+            <br>
+
+            <label for="email">Author email</label>
+            <input type="text" th:field="${request.authorEmail}" id="email">
+            <br>
+
+            <label for="company">Company</label>
+            <input type="text" th:field="${request.company}" id="company">
+            <br>
+
+            <label for="name">Performer name</label>
+            <input type="text" th:field="${request.performerName}" id="name">
+            <br>
+
+            <label for="version">Performer version</label>
+            <input type="text" th:field="${request.performerVersion}" id="version">
+            <br>
+
+            <label for="submit">Send if complete</label>
+            <input class="btn btn-info" type="submit" value="Send" id="submit">
+        </form>
+    </div>
+    <div th:if="${isDataAdded == 'true' and isFileSaved != 'true'}">
+        <form enctype="multipart/form-data" th:action="@{/performer/upload}" method="POST">
+            <input type="file" name="file">
+            <input class="btn btn-info"  type="submit" value="Send">
+        </form>
+    </div>
+    <div class="alert alert-success" role="alert" th:if="${isFileSaved == 'true'}">
+        <p style="text-align: center">Successfully added Performer!</p>
+        <div class="add-description">
+<!--            TODO add description add here -->
+            <form>
+
+            </form>
+        </div>
+        <a style="text-align: center" th:href="@{'/performer/' + ${performerName}}">Preview</a>
+    </div>
+    <div class="alert alert-danger" role="alert" th:if="${isFileSaved == 'false' and isDataAdded == 'true'}">
+        <p style="text-align: center">Something went wrong and Performer was not added</p>
+    </div>
+</div>
+
+<div class="footer" th:insert="fragments/footer.html :: footer"></div>
+</body>
+</html>

@@ -2,14 +2,46 @@
 <html lang="en" xmlns:th="http://www.w3.org/1999/xhtml">
 <head>
     <meta charset="UTF-8">
-    <link href="css/style.css" rel="stylesheet">
-    <link href="webjars/bootstrap/4.3.1/css/bootstrap.min.css" rel="stylesheet">
+    <link href="../css/style.css" rel="stylesheet">
+    <link href="../css/style-development.css" rel="stylesheet">
+    <link href="../webjars/bootstrap/4.3.1/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css?family=Poppins&display=swap" rel="stylesheet">
-    <script src="webjars/bootstrap/4.3.1/js/bootstrap.min.js"></script>
+    <script src="../webjars/bootstrap/4.3.1/js/bootstrap.min.js"></script>
     <title>EaseCI development</title>
 </head>
 <body class="wrapper">
     <header th:insert="fragments/menu-bar.html :: header"></header>
+
+    <div>
+        <p class="description">
+            Each software developer with some Python knowledge can add own Performer to this repository.
+            Our validator not allow to upload malformed file, malware or some other wrong things.
+            If you want to add your own, custom Performer, you need to comply with strict standards
+            of code contract.
+            Main rules:
+            <br>- The Performer script must contains of only one file ended with '.py' extension
+            <br>- Script must extends class and implement abstract methods
+            <br>- Example Performer is here: <a href="https://github.com/easeci/easeci-core/blob/master/lib/performer/external/scm.py">github file</a>
+        </p>
+        <div class="code-field">
+<!--            TODO here type code of Performer contract in Python code-->
+        </div>
+    </div>
+
+    <div class="container">
+        <div class="alert alert-info" role="alert">
+            <p>
+                I want to try to develop Performer for EaseCI
+                <a th:href="@{/performer/upload}">Upload</a>
+            </p>
+        </div>
+        <div class="alert alert-info" role="alert">
+            <p>
+                I want to grab token for upload my Performer
+                <a th:href="@{/token}">Get token</a>
+            </p>
+        </div>
+    </div>
 
     <div class="footer" th:insert="fragments/footer.html :: footer"></div>
 </body>

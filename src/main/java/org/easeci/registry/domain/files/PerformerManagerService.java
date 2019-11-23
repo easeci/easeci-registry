@@ -12,6 +12,7 @@ import reactor.core.publisher.Mono;
 
 import javax.persistence.EntityExistsException;
 import java.time.LocalDateTime;
+import java.util.HashSet;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -43,6 +44,7 @@ public class PerformerManagerService {
                         .status(RegistryStatus.SAVED)
                         .meta(fileRepresentation.getMeta())
                         .build())
+                .doOnError(Throwable::printStackTrace)
                 .onErrorReturn(FileUploadResponse.builder()
                         .status(RegistryStatus.INVALID_REJECTED)
                         .meta(null)
@@ -71,7 +73,9 @@ public class PerformerManagerService {
                                     .creationDate(fileRepresentation.getMeta().getCreationDate())
                                     .performerName(fileRepresentation.getMeta().getPerformerName())
                                     .build());
-                            savedEntity.setPerformerVersions(Set.of(prepare(fileRepresentation, savedEntity)));
+                            Set<PerformerVersionEntity> versionEntities = new HashSet<>();
+                            versionEntities.add(prepare(fileRepresentation, savedEntity));
+                            savedEntity.setPerformerVersions(versionEntities);
                             performerRepository.save(savedEntity);
                         });
     }
