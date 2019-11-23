@@ -1,6 +1,7 @@
 .wrapper {
     width: 70%;
     margin: 0 auto;
+    margin-bottom: 30px;
     font-family: 'Poppins', sans-serif;
 }
 
@@ -59,4 +60,8 @@
     text-align: center;
     clear: both;
     height: 50px;
+}
+
+.code-field {
+
 }

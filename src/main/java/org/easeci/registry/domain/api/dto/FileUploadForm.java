@@ -1,16 +1,12 @@
 package org.easeci.registry.domain.api.dto;
 
-import lombok.*;
+import lombok.Data;
 
 @Data
-@Builder
-@NoArgsConstructor
-@AllArgsConstructor
-public class FileUploadRequest {
+public class FileUploadForm {
     private String authorFullname;
     private String authorEmail;
     private String company;
     private String performerName;
     private String performerVersion;
-    private byte[] multipartFile;
 }
