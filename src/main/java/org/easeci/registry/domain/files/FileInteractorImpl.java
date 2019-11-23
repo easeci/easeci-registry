@@ -7,7 +7,6 @@ import org.springframework.stereotype.Service;
 import java.io.IOException;
 import java.nio.file.*;
 import java.util.List;
-import java.util.Map;
 
 @Slf4j
 @Service
@@ -15,6 +14,9 @@ class FileInteractorImpl implements FileInteractor {
 
     @Value("${storage.dir}")
     private String storage;
+
+    @Value("${file.extension}")
+    private String ext;
 
     @Override
     public RegistryStatus persist(FileRepresentation fileRepresentation) {
@@ -71,8 +73,29 @@ class FileInteractorImpl implements FileInteractor {
     }
 
     @Override
-    public FileRepresentation get(Map<String, String> params) {
-        return null;
+    public FileRepresentation get(final String performerName, final String performerVersion) {
+        Path performerPath = buildPath(performerName, performerVersion);
+        try {
+            return FileRepresentation.builder()
+                    .payload(Files.readAllBytes(performerPath))
+                    .status(RegistryStatus.FOUND)
+                    .build();
+        } catch (IOException e) {
+            log.error("Cannot find file in path: " + performerPath.toString());
+            return FileRepresentation.builder()
+                    .status(RegistryStatus.NOT_FOUND)
+                    .build();
+        }
+    }
+
+    private Path buildPath(final String performerName, final String performerVersion) {
+        return Path.of(storage.concat("/")
+                .concat(performerName)
+                .concat("/")
+                .concat(performerVersion)
+                .concat("/")
+                .concat(performerName.toLowerCase())
+                .concat(ext));
     }
 
     @Override

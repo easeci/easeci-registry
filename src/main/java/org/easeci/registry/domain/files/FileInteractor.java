@@ -13,11 +13,11 @@ interface FileInteractor {
 
     /**
      * Helps to this method we can download complete Performer script
-     * As arguments this method gets map of parameters with such keys:
-     * - Performer's name as `name` key
-     * - Performer's version as `version`
+     * As arguments this method gets two string values:
+     * - Performer's name as `performerName`
+     * - Performer's version as `performerVersion`
      * */
-    FileRepresentation get(Map<String, String> params);
+    FileRepresentation get(String performerName, String performerVersion);
 
     /**
      * This method is created for fetching and presenting data on frontend

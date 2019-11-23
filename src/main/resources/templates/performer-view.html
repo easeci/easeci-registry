@@ -30,7 +30,7 @@
                         <p th:text="'Secure: ' + (${version.validated}? 'yes' : 'no')"></p>
                     </div>
                     <div class="download-link-container">
-                        <a class="download-button" href="#">Download <img th:src="@{../images/download.svg}"></a>
+                        <a class="download-button" th:href="@{'/api/v1/download/' + ${performerName} + '/' + ${version.performerVersion}}" download>Download <img th:src="@{../images/download.svg}"></a>
                     </div>
                 </div>
             </li>
