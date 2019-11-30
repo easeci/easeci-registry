@@ -7,24 +7,29 @@ pipeline {
         host = '51.254.33.28'
         key_path = '/var/jenkins_home/.ssh/id_rsa'
         remote_dir = '/opt/app/registry'
+        jenkins_test_dir = '/tmp/ease/registry'
+        deploy_user = 'root'
     }
     stages {
+        stage('Clean old test data in Jenkins host') {
+            steps {
+                sh '''
+                  if [[ -d ${jenkins_test_dir} ]]
+                  then
+                    rm -r ${jenkins_test_dir}
+                    echo 'Test directory for saving Performers deleted'
+                  else
+                    echo 'Test directory is clean'
+                  fi
+                '''
+            }
+        }
         stage('Create registry directories if not exist') {
             environment {
                 directory = '/var/ease/registry/'
             }
             steps {
                 sh '''
-                  function check_dir() {
-                      if [[ -d ${1} ]]
-                      then
-                        echo "Directory ${1} is exist"
-                      else
-                        mkdir -p ${1} &>/dev/null
-                        echo "Directory ${1} created"
-                      fi
-                  }
-
                   ssh -i ${key_path} root@${host} << EOF
                     if [[ -d ${directory} ]]
                     then
@@ -38,7 +43,14 @@ pipeline {
                         echo "Something went wrong and directory was not created" >&2
                       fi
                     fi
-                    check_dir $remote_dir
+
+                    if [[ -d ${remote_dir} ]]
+                    then
+                      echo "Directory ${remote_dir} is exist"
+                    else
+                      mkdir -p ${remote_dir} &>/dev/null
+                      echo "Directory ${remote_dir} created"
+                    fi
                     exit
                 '''
             }
@@ -76,20 +88,24 @@ pipeline {
         stage('Testing application code') {
             steps {
                 echo '==> Running gradle test task'
-                sh 'mkdir -p /tmp/ease/registry'
-                sh './gradlew test'
+                sh '''
+                  mkdir -p ${jenkins_test_dir}
+                  ./gradlew test
+                  rm -r ${jenkins_test_dir}
+                '''
             }
         }
         stage('Application building') {
             steps {
                 echo '==> Application building'
+                sh 'mkdir -p ${jenkins_test_dir}'
                 sh './gradlew clean build --info'
             }
         }
         stage('Publish artifact over SSH') {
             steps {
                 echo '==> Sending artifact via SSH'
-                sh 'scp build/libs/*.jar ${host}:${remote_dir}'
+                sh "scp -i ${key_path} ${WORKSPACE}/build/libs/*.jar ${deploy_user}@${host}:${remote_dir}"
             }
         }
         stage('Starting new application build') {
@@ -107,6 +123,12 @@ pipeline {
                     fi
                 '''
             }
+        }
+    }
+    post {
+        always {
+            deleteDir()
+            sh 'rm -r ${jenkins_test_dir}'
         }
     }
 }
