@@ -9,12 +9,16 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Mono;
+import reactor.util.function.Tuple2;
 
 import javax.persistence.EntityExistsException;
 import java.time.LocalDateTime;
 import java.util.HashSet;
+import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
+
+import static java.util.Objects.nonNull;
 
 @Service
 @AllArgsConstructor
@@ -123,7 +127,10 @@ public class PerformerManagerService {
         return performerRepository.findDescription(performerName);
     }
 
-    public byte[] findFile(String performerName, String performerVersion) {
-        return fileInteractor.get(performerName, performerVersion).getPayload();
+    public Mono<byte[]> findFile(String performerName, String performerVersion) {
+        return Mono.just(fileInteractor.get(performerName, performerVersion))
+                .filter(Objects::nonNull)
+                .map(FileRepresentation::getPayload)
+                .onErrorMap(throwable -> new ExtensionNotExistsException(performerName, performerVersion));
     }
 }
