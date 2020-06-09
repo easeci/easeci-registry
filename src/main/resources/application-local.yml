@@ -8,9 +8,9 @@ spring:
         dialect: org.hibernate.dialect.PostgreSQLDialect
 
   datasource:
-    url: jdbc:postgresql://localhost:54320/easeci
-    username: easeci
-    password: password
+    url: jdbc:postgresql://localhost:5432/easeci
+    username: fenige
+    password: fenige
 
 storage:
   dir: /var/ease/registry/

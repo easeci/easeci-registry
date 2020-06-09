@@ -4,8 +4,10 @@ import org.easeci.registry.domain.files.dto.PerformerVersionResponse;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 
+import javax.transaction.Transactional;
 import java.util.Optional;
 import java.util.Set;
 
@@ -34,4 +36,9 @@ interface PerformerRepository extends JpaRepository<PerformerEntity, Long> {
 
     @Query(value = "select description from performer where performer_name = ?1", nativeQuery = true)
     String findDescription(String performerName);
+
+    @Modifying
+    @Transactional
+    @Query(value = "update performer set description = :description where performer_name = :performerName", nativeQuery = true)
+    void updateDescription(String performerName, String description);
 }

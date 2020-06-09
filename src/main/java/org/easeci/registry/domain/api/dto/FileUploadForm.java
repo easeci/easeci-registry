@@ -4,6 +4,7 @@ import lombok.Data;
 
 @Data
 public class FileUploadForm {
+//    dodać walidację TODO
     private String authorFullname;
     private String authorEmail;
     private String company;

@@ -1,7 +1,6 @@
 package org.easeci.registry.domain.files;
 
 import java.util.List;
-import java.util.Map;
 
 interface FileInteractor {
 

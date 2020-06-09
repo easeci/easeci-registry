@@ -13,7 +13,7 @@
 <header th:insert="fragments/menu-bar.html :: header"></header>
 
 <div class="wrapper">
-    <h3>Upload Performer Python script</h3>
+    <h3>Upload extension in .jar archive format script</h3>
     <div th:if="${isDataAdded == 'false'}">
         <form class="send-form" action="#" th:action="@{/performer/upload}" th:object="${request}" method="POST">
             <label for="fullname">Author full name</label>
@@ -48,16 +48,26 @@
     </div>
     <div class="alert alert-success" role="alert" th:if="${isFileSaved == 'true'}">
         <p style="text-align: center">Successfully added Performer!</p>
-        <div class="add-description">
-<!--            TODO add description add here -->
-            <form>
-
+        <div class="add-description" th:if="${isDescriptionAdded == 'false'}">
+            <p>Optionally you can add/update description of your plugin.
+            It is good practice to write something about plugin's working, usage etc.
+            Notice that one plugin can has only one description, regardless versions.</p>
+            <form th:action="@{/performer/description}" method="POST">
+                <textarea name="description" th:field="${description.description}"></textarea>
+                <input type="hidden" th:field="${description.performerName}">
+                <input class="btn btn-info"  type="submit" value="Save description">
             </form>
         </div>
-        <a style="text-align: center" th:href="@{'/performer/' + ${performerName}}">Preview</a>
+        <div class="add-description" th:if="${isDescriptionAdded == 'true'}">
+            <p>Description added correctly</p>
+        </div>
+        <a style="text-align: center" th:href="@{'/performer/' + ${performerName}}">Preview plugin</a>
     </div>
     <div class="alert alert-danger" role="alert" th:if="${isFileSaved == 'false' and isDataAdded == 'true'}">
-        <p style="text-align: center">Something went wrong and Performer was not added</p>
+        <p style="text-align: center">Something went wrong and Performer was not added. Errors occurred:</p>
+        <ul th:each="error : ${validationErrors}">
+            <li><p th:text="${error.message}"></p></li>
+        </ul>
     </div>
 </div>
 

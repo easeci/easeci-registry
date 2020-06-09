@@ -7,7 +7,6 @@ import org.easeci.registry.domain.files.PerformerManagerService;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
-import reactor.core.publisher.Mono;
 
 import java.io.IOException;
 
@@ -19,7 +18,7 @@ class UploadRestController {
 
     @PostMapping("/performer")
     @ResponseStatus(HttpStatus.OK)
-    Mono<FileUploadResponse> uploadPerformer(@RequestParam("file") MultipartFile multipartFile,
+    FileUploadResponse uploadPerformer(@RequestParam("file") MultipartFile multipartFile,
                                              @RequestHeader("author-fullname") String authorFullname,
                                              @RequestHeader("author-email") String authorEmail,
                                              @RequestHeader("author-company") String company,
