@@ -6,6 +6,7 @@ import java.time.LocalDateTime;
 
 @Getter
 @Builder
+@ToString(exclude = "payload")
 @NoArgsConstructor
 @AllArgsConstructor
 public class FileRepresentation {

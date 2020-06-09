@@ -8,6 +8,8 @@ import java.io.IOException;
 import java.nio.file.*;
 import java.util.List;
 
+import static org.easeci.registry.domain.files.PathBuilder.buildPath;
+
 @Slf4j
 @Service
 class FileInteractorImpl implements FileInteractor {
@@ -42,7 +44,7 @@ class FileInteractorImpl implements FileInteractor {
             return RegistryStatus.SAVE_FAILED;
         }
         final String completePath = performerPath.concat("/").concat(performerVersion);
-        Path scriptPath = Path.of(completePath.concat("/").concat(performerName.toLowerCase().concat(".py")));
+        Path scriptPath = Path.of(completePath.concat("/").concat(performerName.toLowerCase().concat(ext)));
         return placeContent(scriptPath, fileRepresentation.getPayload());
     }
 
@@ -74,7 +76,7 @@ class FileInteractorImpl implements FileInteractor {
 
     @Override
     public FileRepresentation get(final String performerName, final String performerVersion) {
-        Path performerPath = buildPath(performerName, performerVersion);
+        Path performerPath = buildPath(storage, ext, performerName, performerVersion);
         try {
             return FileRepresentation.builder()
                     .payload(Files.readAllBytes(performerPath))
@@ -86,16 +88,6 @@ class FileInteractorImpl implements FileInteractor {
                     .status(RegistryStatus.NOT_FOUND)
                     .build();
         }
-    }
-
-    private Path buildPath(final String performerName, final String performerVersion) {
-        return Path.of(storage.concat("/")
-                .concat(performerName)
-                .concat("/")
-                .concat(performerVersion)
-                .concat("/")
-                .concat(performerName.toLowerCase())
-                .concat(ext));
     }
 
     @Override

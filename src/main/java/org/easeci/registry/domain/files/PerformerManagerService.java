@@ -1,73 +1,84 @@
 package org.easeci.registry.domain.files;
 
-import lombok.AllArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.easeci.registry.domain.api.dto.FileUploadRequest;
 import org.easeci.registry.domain.api.dto.FileUploadResponse;
+import org.easeci.registry.domain.files.dto.AddPerformerResponse;
 import org.easeci.registry.domain.files.dto.PerformerResponse;
 import org.easeci.registry.domain.files.dto.PerformerVersionResponse;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Mono;
-import reactor.util.function.Tuple2;
 
-import javax.persistence.EntityExistsException;
 import java.time.LocalDateTime;
 import java.util.HashSet;
 import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import static java.util.Objects.nonNull;
+import static java.util.Objects.isNull;
 
+@Slf4j
 @Service
-@AllArgsConstructor
 public class PerformerManagerService {
     private FileInteractor fileInteractor;
     private PerformerRepository performerRepository;
 
-    public Mono<FileUploadResponse> uploadProcess(FileUploadRequest request) {
-        return Mono.just(FileRepresentation.builder()
-                    .status(RegistryStatus.JUST_PROCESSING)
-                    .meta(FileRepresentation.FileMeta.builder()
-                            .authorFullname(request.getAuthorFullname())
-                            .authorEmail(request.getAuthorEmail())
-                            .company(request.getCompany())
-                            .creationDate(LocalDateTime.now())
-                            .performerName(request.getPerformerName())
-                            .performerVersion(request.getPerformerVersion())
-                            .performerScriptBytes(request.getMultipartFile().length)
-                            .validated(false)
-                            .build())
-                    .payload(request.getMultipartFile())
-                    .build())
-                .doOnNext(IncomeFileValidator::valid)
-                .doOnSuccess(this::saveVersion)
-                .doOnSuccess(fileRepresentation -> fileInteractor.persist(fileRepresentation))
-                .map(fileRepresentation -> FileUploadResponse.builder()
-                        .status(RegistryStatus.SAVED)
-                        .meta(fileRepresentation.getMeta())
+    @Value("${tmp.dir}") private String temporaryStorage;
+    @Value("${file.extension}") private String fileExtension;
+
+    public PerformerManagerService(FileInteractor fileInteractor, PerformerRepository performerRepository) {
+        this.fileInteractor = fileInteractor;
+        this.performerRepository = performerRepository;
+    }
+
+    public FileUploadResponse uploadProcess(FileUploadRequest request) {
+        FileRepresentation fileRepresentation = prepare(request);
+        AddPerformerResponse addPerformerResponse = JarFileValidator.of(performerRepository, temporaryStorage, fileExtension).check(fileRepresentation);
+        if (!addPerformerResponse.isAddedCorrectly()) {
+            return FileUploadResponse.builder()
+                    .isUploaded(false)
+                    .status(RegistryStatus.INVALID_REJECTED)
+                    .validationErrorList(addPerformerResponse.getValidationErrorList())
+                    .build();
+        }
+        saveVersion(fileRepresentation);
+        RegistryStatus persistStatus = fileInteractor.persist(fileRepresentation);
+
+        return FileUploadResponse.builder()
+                .isUploaded(true)
+                .status(persistStatus)
+                .meta(fileRepresentation.getMeta())
+                .build();
+    }
+
+    private FileRepresentation prepare(FileUploadRequest request) {
+        return FileRepresentation.builder()
+                .status(RegistryStatus.JUST_PROCESSING)
+                .meta(FileRepresentation.FileMeta.builder()
+                        .authorFullname(request.getAuthorFullname())
+                        .authorEmail(request.getAuthorEmail())
+                        .company(request.getCompany())
+                        .creationDate(LocalDateTime.now())
+                        .performerName(request.getPerformerName())
+                        .performerVersion(request.getPerformerVersion())
+                        .performerScriptBytes(request.getMultipartFile().length)
+                        .validated(false)
                         .build())
-                .doOnError(Throwable::printStackTrace)
-                .onErrorReturn(FileUploadResponse.builder()
-                        .status(RegistryStatus.INVALID_REJECTED)
-                        .meta(null)
-                        .build());
+                .payload(request.getMultipartFile())
+                .build();
     }
 
     private void saveVersion(FileRepresentation fileRepresentation) {
+        if (isNull(fileRepresentation)) {
+            throw new RuntimeException("Cannot process when FileRepresentation is null");
+        }
         performerRepository.findByPerformerName(fileRepresentation.getMeta().getPerformerName())
                 .ifPresentOrElse(performerEntity -> {
-                            String performerName = fileRepresentation.getMeta().getPerformerName();
-                            String performerVersion = fileRepresentation.getMeta().getPerformerVersion();
-                            if (performerRepository.isVersionExists(performerName, performerVersion) > 0) {
-                                throw new EntityExistsException("Performer with name: " + performerEntity.getPerformerName()
-                                + ", and with version: " + performerEntity.getPerformerVersions()
-                                + " just exists in database!");
-                            } else {
-                                performerEntity.getPerformerVersions().add(prepare(fileRepresentation, performerEntity));
-                                performerRepository.save(performerEntity);
-                            }
+                            performerEntity.getPerformerVersions().add(prepare(fileRepresentation, performerEntity));
+                            performerRepository.save(performerEntity);
                         },
                         () -> {
                             PerformerEntity savedEntity = performerRepository.save(PerformerEntity.builder()
@@ -121,6 +132,10 @@ public class PerformerManagerService {
     public Mono<Set<PerformerVersionResponse>> getAllVersionsByName(String performerName) {
         return Mono.just(performerName)
             .map(name -> performerRepository.findAllVersionByName(performerName));
+    }
+
+    public void saveDescription(String performerName, String description) {
+        performerRepository.updateDescription(performerName, description);
     }
 
     public String getDescription(String performerName) {
