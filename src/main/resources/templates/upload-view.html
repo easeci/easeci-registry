@@ -43,6 +43,11 @@
     <div th:if="${isDataAdded == 'true' and isFileSaved != 'true'}">
         <form enctype="multipart/form-data" th:action="@{/performer/upload}" method="POST">
             <input type="file" name="file">
+            <input type="hidden" th:field="${request.authorFullname}">
+            <input type="hidden" th:field="${request.authorEmail}">
+            <input type="hidden" th:field="${request.company}">
+            <input type="hidden" th:field="${request.performerName}">
+            <input type="hidden" th:field="${request.performerVersion}">
             <input class="btn btn-info"  type="submit" value="Send">
         </form>
     </div>

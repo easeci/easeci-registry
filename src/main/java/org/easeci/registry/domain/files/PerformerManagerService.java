@@ -48,7 +48,7 @@ public class PerformerManagerService {
         RegistryStatus persistStatus = fileInteractor.persist(fileRepresentation);
 
         return FileUploadResponse.builder()
-                .isUploaded(true)
+                .isUploaded(persistStatus.equals(RegistryStatus.SAVED))
                 .status(persistStatus)
                 .meta(fileRepresentation.getMeta())
                 .build();
