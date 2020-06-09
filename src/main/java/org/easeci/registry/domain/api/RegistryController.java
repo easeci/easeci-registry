@@ -22,6 +22,7 @@ import javax.validation.Valid;
 import java.io.IOException;
 import java.util.Set;
 
+import static java.util.Objects.isNull;
 import static java.util.Objects.nonNull;
 import static org.easeci.registry.domain.api.utils.PageUtils.transformPageNum;
 
@@ -30,7 +31,6 @@ import static org.easeci.registry.domain.api.utils.PageUtils.transformPageNum;
 @RequestMapping("/")
 class RegistryController {
     private PerformerManagerService performerManagerService;
-    private FileUploadForm request = null;
 
     RegistryController(PerformerManagerService performerManagerService) {
         this.performerManagerService = performerManagerService;
@@ -82,18 +82,25 @@ class RegistryController {
             model.addAttribute("isDataAdded", "true");
         }
         if (nonNull(file)) {
-            FileUploadRequest fileUploadRequest = prepare(file);
+            if (isNull(request) || isNull(request.getPerformerName()) || isNull(request.getPerformerVersion())) {
+                log.info("Rejected: {}", request);
+                model.addAttribute("isFileSaved", "false");
+                return "upload-view";
+            }
+            log.info("Received completed request with multipart file to register new plugin: {}", request.toString());
+            FileUploadForm req = (FileUploadForm) model.getAttribute("request");
+            FileUploadRequest fileUploadRequest = prepare(file, req);
             FileUploadResponse fileUploadResponse = performerManagerService.uploadProcess(fileUploadRequest);
             model.addAttribute("isFileSaved", String.valueOf(fileUploadResponse.isUploaded()));
-            model.addAttribute("performerName", this.request.getPerformerName());
-            model.addAttribute("performerVersion", this.request.getPerformerVersion());
+            model.addAttribute("performerName", req.getPerformerName());
+            model.addAttribute("performerVersion", req.getPerformerVersion());
             model.addAttribute("validationErrors", fileUploadResponse.getValidationErrorList());
-            model.addAttribute("description", new PluginDescriptionRequest(this.request.getPerformerName()));
+            model.addAttribute("description", new PluginDescriptionRequest(req.getPerformerName()));
             model.addAttribute("isDescriptionAdded", "false");
             log.info("Uploading file completed, isFileSaved={}", fileUploadResponse.isUploaded());
         } else {
-            this.request = request;
             model.addAttribute("request", request);
+            log.info("Saving form data, and adding to model: " + request);
         }
         return "upload-view";
     }
@@ -107,14 +114,14 @@ class RegistryController {
         return "upload-view";
     }
 
-    private FileUploadRequest prepare(MultipartFile file) throws IOException {
+    private FileUploadRequest prepare(MultipartFile file, FileUploadForm request) throws IOException {
         return  FileUploadRequest.builder()
                 .multipartFile(file.getBytes())
-                .authorFullname(this.request.getAuthorFullname())
-                .authorEmail(this.request.getAuthorEmail())
-                .performerName(this.request.getPerformerName())
-                .performerVersion(this.request.getPerformerVersion())
-                .company(this.request.getCompany())
+                .authorFullname(request.getAuthorFullname())
+                .authorEmail(request.getAuthorEmail())
+                .performerName(request.getPerformerName())
+                .performerVersion(request.getPerformerVersion())
+                .company(request.getCompany())
                 .build();
     }
 
