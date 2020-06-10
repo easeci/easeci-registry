@@ -22,8 +22,6 @@ import javax.validation.Valid;
 import java.io.IOException;
 import java.util.Set;
 
-import static java.util.Objects.isNull;
-import static java.util.Objects.nonNull;
 import static org.easeci.registry.domain.api.utils.PageUtils.transformPageNum;
 
 @Slf4j
@@ -34,12 +32,6 @@ class RegistryController {
 
     RegistryController(PerformerManagerService performerManagerService) {
         this.performerManagerService = performerManagerService;
-    }
-
-    @GetMapping
-    @ResponseStatus(HttpStatus.OK)
-    String home() {
-        return "home";
     }
 
     @GetMapping("/performers")
@@ -73,35 +65,36 @@ class RegistryController {
         return "upload-view";
     }
 
+    @PostMapping("/performer/upload/form")
+    @ResponseStatus(HttpStatus.OK)
+    String uploadForm(@Valid @ModelAttribute("request") FileUploadForm request, BindingResult bindingResult, ModelMap model) {
+        if (bindingResult.hasErrors()) {
+            log.info("Errors occurred while request body validation: {}", bindingResult.getAllErrors());
+            model.addAttribute("isDataAdded", "false");
+            return "upload-view";
+        }
+        model.addAttribute("isDataAdded", "true");
+        model.addAttribute("request", request);
+        log.info("Saving form data, and adding to model: " + request);
+        return "upload-view";
+    }
+
     @PostMapping("/performer/upload")
     @ResponseStatus(HttpStatus.OK)
-    String upload(@Valid @ModelAttribute("request") FileUploadForm request,
-                  @ModelAttribute("file") MultipartFile file,
-                  ModelMap model, BindingResult bindingResult) throws IOException {
-        if (!bindingResult.hasErrors()) {
-            model.addAttribute("isDataAdded", "true");
-        }
-        if (nonNull(file)) {
-            if (isNull(request) || isNull(request.getPerformerName()) || isNull(request.getPerformerVersion())) {
-                log.info("Rejected: {}", request);
-                model.addAttribute("isFileSaved", "false");
-                return "upload-view";
-            }
-            log.info("Received completed request with multipart file to register new plugin: {}", request.toString());
-            FileUploadForm req = (FileUploadForm) model.getAttribute("request");
-            FileUploadRequest fileUploadRequest = prepare(file, req);
-            FileUploadResponse fileUploadResponse = performerManagerService.uploadProcess(fileUploadRequest);
-            model.addAttribute("isFileSaved", String.valueOf(fileUploadResponse.isUploaded()));
-            model.addAttribute("performerName", req.getPerformerName());
-            model.addAttribute("performerVersion", req.getPerformerVersion());
-            model.addAttribute("validationErrors", fileUploadResponse.getValidationErrorList());
-            model.addAttribute("description", new PluginDescriptionRequest(req.getPerformerName()));
-            model.addAttribute("isDescriptionAdded", "false");
-            log.info("Uploading file completed, isFileSaved={}", fileUploadResponse.isUploaded());
-        } else {
-            model.addAttribute("request", request);
-            log.info("Saving form data, and adding to model: " + request);
-        }
+    String upload(@ModelAttribute("request") FileUploadForm request,
+                  @ModelAttribute("file") MultipartFile file, ModelMap model) throws IOException {
+        log.info("Received completed request with multipart file to register new plugin: {}", request.toString());
+        FileUploadForm req = (FileUploadForm) model.getAttribute("request");
+        FileUploadRequest fileUploadRequest = prepare(file, req);
+        FileUploadResponse fileUploadResponse = performerManagerService.uploadProcess(fileUploadRequest);
+        model.addAttribute("isFileSaved", String.valueOf(fileUploadResponse.isUploaded()));
+        model.addAttribute("isDataAdded", "true");
+        model.addAttribute("performerName", req.getPerformerName());
+        model.addAttribute("performerVersion", req.getPerformerVersion());
+        model.addAttribute("validationErrors", fileUploadResponse.getValidationErrorList());
+        model.addAttribute("description", new PluginDescriptionRequest(req.getPerformerName()));
+        model.addAttribute("isDescriptionAdded", "false");
+        log.info("Uploading file completed, isFileSaved={}", fileUploadResponse.isUploaded());
         return "upload-view";
     }
 
@@ -110,6 +103,7 @@ class RegistryController {
     String addDescription(@ModelAttribute("description") PluginDescriptionRequest description, ModelMap model)  {
         model.addAttribute("isDescriptionAdded", "true");
         model.addAttribute("isFileSaved", "true");
+        model.addAttribute("performerName", description.getPerformerName());
         performerManagerService.saveDescription(description.getPerformerName(), description.getDescription());
         return "upload-view";
     }
@@ -123,11 +117,5 @@ class RegistryController {
                 .performerVersion(request.getPerformerVersion())
                 .company(request.getCompany())
                 .build();
-    }
-
-    @GetMapping("/development")
-    @ResponseStatus(HttpStatus.OK)
-    String development() {
-        return "development";
     }
 }

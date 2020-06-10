@@ -19,11 +19,11 @@ class UploadRestController {
     @PostMapping("/performer")
     @ResponseStatus(HttpStatus.OK)
     FileUploadResponse uploadPerformer(@RequestParam("file") MultipartFile multipartFile,
-                                             @RequestHeader("author-fullname") String authorFullname,
-                                             @RequestHeader("author-email") String authorEmail,
-                                             @RequestHeader("author-company") String company,
-                                             @RequestHeader("performer-name") String performerName,
-                                             @RequestHeader("performer-version") String performerVersion) throws IOException {
+                                       @RequestHeader("author-fullname") String authorFullname,
+                                       @RequestHeader("author-email") String authorEmail,
+                                       @RequestHeader("author-company") String company,
+                                       @RequestHeader("performer-name") String performerName,
+                                       @RequestHeader("performer-version") String performerVersion) throws IOException {
 
         return filesFacadeService.uploadProcess(FileUploadRequest.builder()
                         .authorFullname(authorFullname)
