@@ -57,11 +57,12 @@
 }
 
 .footer {
-    text-align: center;
-    clear: both;
-    height: 50px;
-}
-
-.code-field {
-
+    /*text-align: center;*/
+    /*clear: both;*/
+    /*height: 50px;*/
+    width: 72%;
+    bottom: 0;
+    position: absolute;
+    font-size: 13px;
+    color: #000000ad;
 }

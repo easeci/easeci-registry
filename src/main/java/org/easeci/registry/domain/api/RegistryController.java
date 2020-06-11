@@ -36,11 +36,12 @@ class RegistryController {
 
     @GetMapping("/performers")
     @ResponseStatus(HttpStatus.OK)
-    String performers(@RequestParam(name = "page", defaultValue = "1") String page, Model model) {
+    String performersPagination(@RequestParam(name = "page", defaultValue = "1") String page, Model model) {
         final int numPage = transformPageNum(page);
         final int pageSize = 10;
         Mono<Page<PerformerResponse>> performerPage = performerManagerService.getPerformerPage(numPage, pageSize);
-        model.addAttribute("page", performerPage.block());
+        Page<PerformerResponse> performerResponsePage = performerPage.block();
+        model.addAttribute("page", performerResponsePage);
         model.addAttribute("performerName", "");
         return "performers";
     }

@@ -39,7 +39,7 @@
         <div class="pagination-container" th:with="current_page = ${page.number}">
             <nav aria-label="Performers pagination">
                 <ul class="pagination">
-                    <li class="page-item">
+                    <li class="page-item" th:if="${page.number} > 0">
                         <a class="page-link" th:href="@{'/performers?page=' + ${current_page}}" aria-label="Previous">
                             <span aria-hidden="true">&laquo;</span>
                             <span class="sr-only">Previous</span>
@@ -50,7 +50,7 @@
                             <a class="page-link" th:href="@{'/performers?page=' + ${pageNum}}" th:text="${pageNum}"></a>
                         </li>
                     </span>
-                    <li class="page-item">
+                    <li class="page-item" th:if="${page.totalPages} > ${current_page + 1}">
                         <a class="page-link" th:href="@{'/performers?page=' + ${current_page + 2}}" aria-label="Next">
                             <span aria-hidden="true">&raquo;</span>
                             <span class="sr-only">Next</span>
