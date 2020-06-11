@@ -12,30 +12,31 @@
 <body class="wrapper">
     <header th:insert="fragments/menu-bar.html :: header"></header>
 
-    <div>
-        <p class="description">
-            Each software developer with some Java programming language knowledge can add own Performer to this repository.
+    <div class="description">
+        <p>
+            Each software developer with some programming language knowledge on JVM platform can add own Performer to this repository.
             Our validator not allow to upload malformed file, malware or some other wrong things.
             If you want to add your own, custom Performer, you need to comply with strict standards
             of code contract.
             Main rules:
-            <br>- The Performer script must contains of only one file ended with '.jar' extension
-            <br>- JAR entry class must extends class and implement abstract methods specified in extension-api module
-            <br>- Example Performer is here: <a href="https://github.com/meksula/easeci-core-java/tree/master/welcome-logo">github repository</a>
-            <br>
+            <ul>
+                <li>- The Performer script must contains of only one file ended with '.jar' extension</li>
+                <li>- JAR entry class must extends class and implement abstract methods specified in extension-api module</li>
+                <li>- Example Performer is here: <a href="https://github.com/meksula/easeci-core-java/tree/master/welcome-logo">github repository</a></li>
+            </ul>
             Look at <a th:href="@{/documentation}">documentation</a> for more details.
         </p>
     </div>
 
     <div class="container">
         <div class="alert alert-info" role="alert">
-            <p>
+            <p class="no-margin">
                 I want to try to develop Performer for EaseCI
                 <a th:href="@{/performer/upload}">Upload</a>
             </p>
         </div>
         <div class="alert alert-info" role="alert">
-            <p>
+            <p class="no-margin">
                 I want to grab token for upload my Performer
                 <a th:href="@{/token}">Get token</a>
             </p>
