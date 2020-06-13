@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <link href="../css/style.css" rel="stylesheet">
-    <link href="../css/style-development.css" rel="stylesheet">
+    <link href="../css/style-documentation.css" rel="stylesheet">
     <link href="../webjars/bootstrap/4.3.1/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css?family=Poppins&display=swap" rel="stylesheet">
     <script src="../webjars/bootstrap/4.3.1/js/bootstrap.min.js"></script>
@@ -13,14 +13,18 @@
 </head>
 <body class="wrapper">
     <header th:insert="fragments/menu-bar.html :: header"></header>
-    <p>Articles:</p>
-    <ul>
-        <li><a th:href="@{/documentation/introduction}">Introduction</a></li>
-        <li><a th:href="@{/documentation/prerequisites}">Prerequisites</a></li>
-    </ul>
-    <main>
-        <article th:insert="documentation/doc-__${article}__.html :: div"></article>
-    </main>
+    <div class="documentation-container">
+        <h1 class="page-title">EaseCI reference</h1>
+        <div class="table-of-content">
+            <p>Articles:</p>
+            <ul>
+                <li><a th:href="@{/documentation/introduction}">Introduction</a></li>
+                <li><a th:href="@{/documentation/prerequisites}">Prerequisites</a></li>
+            </ul>
+        </div>
+        <div th:insert="documentation/doc-__${article}__.html :: div" class="article-content">
+        </div>
+    </div>
     <div class="footer" th:insert="fragments/footer.html :: footer"></div>
 </body>
 </html>

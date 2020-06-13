@@ -1,11 +1,8 @@
-* {
-    font-size: 13px;
-    color: #000000ad;
-}
-
 .container {
     margin-top: 30px;
     text-align: center;
+    font-size: 13px;
+    color: #000000ad;
 }
 
 .send-form {
@@ -21,6 +18,8 @@ label {
     padding-top: 20px;
     width: 70%;
     text-align: justify;
+    font-size: 13px;
+    color: #000000ad;
 }
 
 .description p {
