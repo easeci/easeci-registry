@@ -12,7 +12,7 @@ import java.io.IOException;
 
 @RestController
 @AllArgsConstructor
-@RequestMapping("/api/v1/upload")
+@RequestMapping("/secured/api/v1/upload")
 class UploadRestController {
     private PerformerManagerService filesFacadeService;
 

@@ -10,13 +10,20 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 
+import java.security.Principal;
+
+import static java.util.Objects.nonNull;
+
 @Slf4j
 @Controller
 class LoginController {
 
     @GetMapping("/login")
     @ResponseStatus(HttpStatus.OK)
-    String login(Model model) {
+    String login(@RequestParam(value = "error", required = false) String error, Model model) {
+        if (nonNull(error)) {
+            model.addAttribute("loginError", true);
+        }
         model.addAttribute("login", new LoginRequest());
         return "login";
     }
@@ -24,6 +31,13 @@ class LoginController {
     @PostMapping("/login")
     @ResponseStatus(HttpStatus.OK)
     String login(@Valid @ModelAttribute("login") LoginRequest loginRequest, BindingResult bindingResult, Model model) {
-        return "login";
+        return "home";
+    }
+
+    @GetMapping("/user/details")
+    @ResponseStatus(HttpStatus.OK)
+    String userDetails(Principal principal, Model model) {
+        model.addAttribute("username", principal.getName());
+        return "user-details";
     }
 }

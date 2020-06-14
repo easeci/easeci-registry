@@ -9,7 +9,11 @@
                 <li class="nav-item"><a th:href="@{/performers}" class="nav-link">Performers</a></li>
                 <li class="nav-item"><a th:href="@{/development}" class="nav-link">For developers</a></li>
                 <li class="nav-item"><a th:href="@{/documentation}" class="nav-link">Documentation</a></li>
-                <li class="nav-item login-button"><a th:href="@{/login}" class="nav-link">Login</a></li>
+                <li sec:authorize="isAuthenticated()" class="nav-item login-button">
+                    <img th:src="@{../../images/mini-avatar.png}" th:href="@{/user/details}" style="display: inline-block;padding-top: 7px;">
+                    <a th:href="@{/user/details}" th:text="${#authentication.principal.username}" class="nav-link" style="padding-left: 5px;float: right"></a>
+                </li>
+                <li sec:authorize="isAnonymous()" class="nav-item login-button"><a th:href="@{/login}" class="nav-link">Login</a></li>
             </ul>
         </div>
     </div>
