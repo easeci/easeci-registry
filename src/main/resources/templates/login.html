@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="UTF-8">
+    <link href="css/style.css" rel="stylesheet">
+    <link href="webjars/bootstrap/4.3.1/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css?family=Poppins&display=swap" rel="stylesheet">
+    <script src="webjars/bootstrap/4.3.1/js/bootstrap.min.js"></script>
+    <link rel="shortcut icon" type="image/png" th:src="@{../../images/favicon.ico}"/>
+    <title>EaseCI registry login</title>
+</head>
+<body class="wrapper">
+    <header th:insert="fragments/menu-bar.html :: header"></header>
+
+    <div>
+        <form class="login-form" action="#" th:action="@{/login}" th:object="${login}" method="POST">
+            <h3>Login to EaseCI Registry</h3>
+            <div class="form-fields">
+                <div>
+                    <label for="username">Username</label>
+                    <input type="text" th:field="*{username}" id="username">
+                    <p th:if="${#fields.hasErrors('username')}" th:errors="*{username}"></p>
+                </div>
+                <div>
+                    <label for="password">Password</label>
+                    <input type="password" th:field="*{password}" id="password">
+                    <p th:if="${#fields.hasErrors('password')}" th:errors="*{password}"></p>
+                </div>
+            </div>
+            <input class="btn btn-info"  type="submit" value="Login">
+        </form>
+    </div>
+
+    <div class="footer" th:insert="fragments/footer.html :: footer"></div>
+</body>
+</html>

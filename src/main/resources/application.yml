@@ -5,6 +5,9 @@ spring:
       max-request-size: 500MB
       enabled: true
 
+bcrypt:
+  salt: NpWcp6j5sCkczqPx
+
 file:
   extension: .jar
 

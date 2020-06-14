@@ -66,3 +66,44 @@
     font-size: 13px;
     color: #000000ad;
 }
+
+.nav-container {
+    width: 100%;
+}
+
+.login-button {
+    margin-right: 0;
+    margin-left: auto;
+}
+
+.login-form {
+    width: 50%;
+    min-width: 300px;
+    max-width: 460px;
+    margin: 0 auto;
+    padding-top: 13em;
+    text-align: center;
+}
+
+.login-form h3 {
+    padding-bottom: 1em;
+}
+
+.login-form label {
+    width: 100%;
+    margin: 0;
+    text-align: left;
+}
+
+.form-fields div {
+    margin-bottom: 2em;
+}
+
+.form-fields input {
+    width: 100%;
+}
+
+.form-fields p {
+    text-align: center;
+    color: red;
+}
