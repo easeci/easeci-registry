@@ -8,8 +8,10 @@ import org.easeci.registry.domain.api.dto.PluginDescriptionRequest;
 import org.easeci.registry.domain.files.PerformerManagerService;
 import org.easeci.registry.domain.files.dto.PerformerResponse;
 import org.easeci.registry.domain.files.dto.PerformerVersionResponse;
+import org.easeci.registry.domain.user.RegistryUser;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.ui.ModelMap;
@@ -46,7 +48,7 @@ class RegistryController {
         return "performers";
     }
 
-    @GetMapping("/performer/{performerName}")
+    @GetMapping("/performers/{performerName}")
     @ResponseStatus(HttpStatus.OK)
     String performerView(@PathVariable(name = "performerName") String performerName, Model model) {
         Mono<Set<PerformerVersionResponse>> allVersionsByName = performerManagerService.getAllVersionsByName(performerName);
@@ -59,8 +61,9 @@ class RegistryController {
 
     @GetMapping("/performer/upload")
     @ResponseStatus(HttpStatus.OK)
-    String formView(Model model) {
-        model.addAttribute("request", new FileUploadForm());
+    String formView(Model model, Authentication authentication) {
+        RegistryUser registryUser = (RegistryUser) authentication.getPrincipal();
+        model.addAttribute("request", new FileUploadForm(registryUser));
         model.addAttribute("isDataAdded", "false");
         model.addAttribute("file", new Object());
         return "upload-view";

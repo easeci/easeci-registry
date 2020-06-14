@@ -13,3 +13,12 @@ file:
 
 tmp:
   dir: /tmp/easeci/registry
+
+endpoints:
+  opened:
+    - "/"
+    - "/performers"
+    - "/performers/**"
+    - "/development"
+    - "/documentation/**"
+    - "/api/v1/**"
