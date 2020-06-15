@@ -18,13 +18,18 @@
 .table-of-content ul {
     padding-left: 0.6em;
     padding-right: 1em;
+    list-style-type: none;
+}
+
+.table-of-content ul li p {
+    margin-top: 10px;
+    margin-bottom: 0;
 }
 
 .article-content {
     display: inline-block;
     width: 74%;
     float: right;
-    list-style-type: decimal
 }
 
 pre {

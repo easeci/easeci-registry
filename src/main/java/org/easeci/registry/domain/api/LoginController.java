@@ -1,7 +1,11 @@
 package org.easeci.registry.domain.api;
 
+import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.easeci.registry.domain.api.dto.LoginRequest;
+import org.easeci.registry.domain.user.dto.RegistrationRequest;
+import org.easeci.registry.domain.user.dto.RegistrationResponse;
+import org.easeci.registry.domain.user.RegistrationService;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -16,14 +20,15 @@ import static java.util.Objects.nonNull;
 
 @Slf4j
 @Controller
+@AllArgsConstructor
 class LoginController {
+    private RegistrationService registrationService;
 
     @GetMapping("/login")
     @ResponseStatus(HttpStatus.OK)
     String login(@RequestParam(value = "error", required = false) String error, Model model) {
-        if (nonNull(error)) {
+        if (nonNull(error))
             model.addAttribute("loginError", true);
-        }
         model.addAttribute("login", new LoginRequest());
         return "login";
     }
@@ -39,5 +44,20 @@ class LoginController {
     String userDetails(Principal principal, Model model) {
         model.addAttribute("username", principal.getName());
         return "user-details";
+    }
+
+    @GetMapping("/registration")
+    @ResponseStatus(HttpStatus.OK)
+    String registration(Model model) {
+        model.addAttribute("registrationRequest", new RegistrationRequest());
+        return "registration";
+    }
+
+    @PostMapping("/registration")
+    @ResponseStatus(HttpStatus.OK)
+    String registration(@Valid @ModelAttribute("registrationRequest") RegistrationRequest registrationRequest, BindingResult bindingResult, Model model) {
+        RegistrationResponse registrationResponse = registrationService.register(registrationRequest);
+        model.addAttribute("registrationResponse", registrationResponse);
+        return "registration";
     }
 }
