@@ -8,8 +8,10 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import javax.persistence.*;
+import java.net.URL;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Date;
 
 @Data
 @Entity
@@ -27,6 +29,21 @@ public class RegistryUser implements UserDetails {
     private String email;
     private String company;
     private String password;
+    private Date registrationDate;
+    private URL website;
+    private UserType userType;
+
+    @Column(columnDefinition = "boolean default true")
+    private boolean accountNotExpired;
+
+    @Column(columnDefinition = "boolean default true")
+    private boolean accountNonLocked;
+
+    @Column(columnDefinition = "boolean default true")
+    private boolean credentialsNonExpired;
+
+    @Column(columnDefinition = "boolean default true")
+    private boolean enabled;
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
@@ -35,21 +52,21 @@ public class RegistryUser implements UserDetails {
 
     @Override
     public boolean isAccountNonExpired() {
-        return true;
+        return accountNotExpired;
     }
 
     @Override
     public boolean isAccountNonLocked() {
-        return true;
+        return accountNonLocked;
     }
 
     @Override
     public boolean isCredentialsNonExpired() {
-        return true;
+        return credentialsNonExpired;
     }
 
     @Override
     public boolean isEnabled() {
-        return true;
+        return enabled;
     }
 }

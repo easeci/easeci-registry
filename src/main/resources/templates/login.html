@@ -27,6 +27,9 @@
                     <p th:if="${#fields.hasErrors('password')}" th:errors="*{password}"></p>
                     <p th:if="${loginError}">Username or password is incorrect</p>
                 </div>
+                <div>
+                    <a th:href="@{/registration}">Create new account</a>
+                </div>
             </div>
             <input class="btn btn-info"  type="submit" value="Login">
         </form>

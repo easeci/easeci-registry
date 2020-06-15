@@ -17,6 +17,7 @@ tmp:
 endpoints:
   opened:
     - "/"
+    - "/registration"
     - "/performers"
     - "/performers/**"
     - "/development"

@@ -16,10 +16,19 @@
     <div class="documentation-container">
         <h1 class="page-title">EaseCI reference</h1>
         <div class="table-of-content">
-            <p>Articles:</p>
+            <p>Publications</p>
             <ul>
+                <li><p>Quick start</p></li>
                 <li><a th:href="@{/documentation/introduction}">Introduction</a></li>
                 <li><a th:href="@{/documentation/prerequisites}">Prerequisites</a></li>
+                <li><p>Installation</p></li>
+                <li><a th:href="@{/documentation/introduction}">EaseCI core installation</a></li>
+                <li><a th:href="@{/documentation/introduction}">EaseCI client installation</a></li>
+                <li><p>Deal with Plugins</p></li>
+                <li><a th:href="@{/documentation/introduction}">Plugin installation</a></li>
+                <li><a th:href="@{/documentation/introduction}">Simple plugin development</a></li>
+                <li><a th:href="@{/documentation/prerequisites}">Plugins uploading</a></li>
+                <li><a th:href="@{/documentation/prerequisites}">Plugins downloading</a></li>
             </ul>
         </div>
         <div th:insert="documentation/doc-__${article}__.html :: div" class="article-content">
