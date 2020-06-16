@@ -6,6 +6,7 @@ import org.easeci.registry.domain.api.dto.LoginRequest;
 import org.easeci.registry.domain.user.dto.RegistrationRequest;
 import org.easeci.registry.domain.user.dto.RegistrationResponse;
 import org.easeci.registry.domain.user.RegistrationService;
+import org.springframework.data.repository.query.Param;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -56,8 +57,20 @@ class LoginController {
     @PostMapping("/registration")
     @ResponseStatus(HttpStatus.OK)
     String registration(@Valid @ModelAttribute("registrationRequest") RegistrationRequest registrationRequest, BindingResult bindingResult, Model model) {
+        if (bindingResult.hasErrors()) {
+            return "registration";
+        }
         RegistrationResponse registrationResponse = registrationService.register(registrationRequest);
         model.addAttribute("registrationResponse", registrationResponse);
+        model.addAttribute("email", registrationRequest.getEmail());
         return "registration";
+    }
+
+    @GetMapping("/activation")
+    @ResponseStatus(HttpStatus.OK)
+    String activationLink(@Param("activationToken") String activationToken, Model model) {
+        RegistrationResponse registrationResponse = registrationService.activate(activationToken);
+        model.addAttribute("registrationResponse", registrationResponse);
+        return "activation";
     }
 }

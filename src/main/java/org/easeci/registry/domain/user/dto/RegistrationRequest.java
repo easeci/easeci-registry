@@ -1,16 +1,19 @@
 package org.easeci.registry.domain.user.dto;
 
 import lombok.Data;
+import lombok.ToString;
 import org.easeci.registry.domain.user.UserType;
 import org.hibernate.validator.constraints.Length;
 
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;
-import java.net.URL;
 
 @Data
+@ToString
 public class RegistrationRequest {
 
     @NotNull
@@ -36,8 +39,9 @@ public class RegistrationRequest {
     private String passwordRepetition;
 
     @Length(max = 255)
-    private URL website;
+    private String website;
 
     @NotNull
+    @Enumerated(EnumType.STRING)
     private UserType userType;
 }

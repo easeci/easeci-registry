@@ -62,6 +62,38 @@ public enum RegistryStatus {
         public AddPerformerResponse.ValidationError getValidationError() {
             return new AddPerformerResponse.ValidationError("File is just processing");
         }
+    },
+
+//  Statuses for user registration
+    USER_CREATED {
+        @Override
+        public AddPerformerResponse.ValidationError getValidationError() {
+            return new AddPerformerResponse.ValidationError("User created with success");
+        }
+    },
+    USER_ACTIVATED {
+        @Override
+        public AddPerformerResponse.ValidationError getValidationError() {
+            return new AddPerformerResponse.ValidationError("User activated with success");
+        }
+    },
+    PASSWORDS_NOT_EQUAL {
+        @Override
+        public AddPerformerResponse.ValidationError getValidationError() {
+            return new AddPerformerResponse.ValidationError("Password and password repetition must be equal");
+        }
+    },
+    USERNAME_OR_EMAIL_EXISTS {
+        @Override
+        public AddPerformerResponse.ValidationError getValidationError() {
+            return new AddPerformerResponse.ValidationError("Username or email address just exists in EaseCI registry");
+        }
+    },
+    REGISTRATION_ERROR {
+        @Override
+        public AddPerformerResponse.ValidationError getValidationError() {
+            return new AddPerformerResponse.ValidationError("Server error occurred while registration process");
+        }
     };
 
     public abstract AddPerformerResponse.ValidationError getValidationError();
