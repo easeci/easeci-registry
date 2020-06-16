@@ -6,4 +6,6 @@ import org.easeci.registry.domain.user.dto.RegistrationResponse;
 public interface RegistrationService {
 
     RegistrationResponse register(RegistrationRequest registrationRequest);
+
+    RegistrationResponse activate(String activationToken);
 }

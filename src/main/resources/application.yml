@@ -14,10 +14,14 @@ file:
 tmp:
   dir: /tmp/easeci/registry
 
+activation:
+  url: http://easeci.io:8080/activation?activationToken=
+
 endpoints:
   opened:
     - "/"
     - "/registration"
+    - "/activation"
     - "/performers"
     - "/performers/**"
     - "/development"

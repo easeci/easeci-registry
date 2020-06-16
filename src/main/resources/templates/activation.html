@@ -1,0 +1,26 @@
+<!doctype html>
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <link href="css/style.css" rel="stylesheet">
+    <link href="webjars/bootstrap/4.3.1/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css?family=Poppins&display=swap" rel="stylesheet">
+    <script src="webjars/bootstrap/4.3.1/js/bootstrap.min.js"></script>
+    <link rel="shortcut icon" type="image/png" th:src="@{../../images/favicon.ico}"/>
+    <title>EaseCI registry</title>
+</head>
+    <body class="wrapper">
+        <header th:insert="fragments/menu-bar.html :: header"></header>
+
+        <div th:if="${registrationResponse != null and registrationResponse.getRegistryStatus().toString() == 'USER_ACTIVATED'}" class="alert alert-success alert-center" role="alert">
+            <p>Account activated correctly</p>
+            <a th:href="@{/login}">Login to EaseCI Registry</a>
+        </div>
+
+        <div th:if="${registrationResponse != null and registrationResponse.getRegistryStatus().toString() != 'USER_ACTIVATED'}" class="alert alert-success alert-center" role="alert">
+            <p>Account not activated. Activation token is invalid</p>
+        </div>
+
+        <div class="footer" th:insert="fragments/footer.html :: footer"></div>
+    </body>
+</html>

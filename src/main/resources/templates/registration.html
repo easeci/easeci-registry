@@ -12,7 +12,7 @@
 <body class="wrapper">
     <header th:insert="fragments/menu-bar.html :: header"></header>
 
-    <div>
+    <div th:if="${registrationResponse == null}">
         <form class="login-form" action="#" th:action="@{/registration}" th:object="${registrationRequest}" method="POST">
             <h3>EaseCI Registry User registration</h3>
             <div class="form-fields">
@@ -22,33 +22,52 @@
                     <p th:if="${#fields.hasErrors('username')}" th:errors="*{username}"></p>
                 </div>
                 <div>
-                    <label for="username">Username</label>
-                    <input type="text" th:field="*{username}" id="username">
-                    <p th:if="${#fields.hasErrors('username')}" th:errors="*{username}"></p>
+                    <label for="email">Email</label>
+                    <input type="text" th:field="*{email}" id="email">
+                    <p th:if="${#fields.hasErrors('email')}" th:errors="*{email}"></p>
                 </div>
                 <div>
-                    <label for="username">Username</label>
-                    <input type="text" th:field="*{username}" id="username">
-                    <p th:if="${#fields.hasErrors('username')}" th:errors="*{username}"></p>
+                    <label for="company">Company</label>
+                    <input type="text" th:field="*{company}" id="company">
+                    <p th:if="${#fields.hasErrors('company')}" th:errors="*{company}"></p>
                 </div>
                 <div>
-                    <label for="username">Username</label>
-                    <input type="text" th:field="*{username}" id="username">
-                    <p th:if="${#fields.hasErrors('username')}" th:errors="*{username}"></p>
+                    <label for="password">Password</label>
+                    <input type="password" th:field="*{password}" id="password">
+                    <p th:if="${#fields.hasErrors('password')}" th:errors="*{password}"></p>
                 </div>
                 <div>
-                    <label for="username">Username</label>
-                    <input type="text" th:field="*{username}" id="username">
-                    <p th:if="${#fields.hasErrors('username')}" th:errors="*{username}"></p>
+                    <label for="passwordRepetition">Password repetition</label>
+                    <input type="password" th:field="*{passwordRepetition}" id="passwordRepetition">
+                    <p th:if="${#fields.hasErrors('passwordRepetition')}" th:errors="*{passwordRepetition}"></p>
                 </div>
                 <div>
-                    <label for="username">Username</label>
-                    <input type="text" th:field="*{username}" id="username">
-                    <p th:if="${#fields.hasErrors('username')}" th:errors="*{username}"></p>
+                    <label for="website">Website address</label>
+                    <input type="text" th:field="*{website}" id="website">
+                    <p th:if="${#fields.hasErrors('website')}" th:errors="*{website}"></p>
+                </div>
+                <div>
+                    <label for="userType">User Type</label>
+                    <select name="userType" id="userType" th:field="*{userType}">
+                        <option value="ORGANISATION">Organisation</option>
+                        <option value="FREELANCER">Freelancer</option>
+                    </select>
+                    <p th:if="${#fields.hasErrors('userType')}" th:errors="*{userType}"></p>
                 </div>
             </div>
             <input class="btn btn-info" type="submit" value="Register user">
         </form>
+    </div>
+
+    <div th:if="${registrationResponse != null and registrationResponse.getRegistryStatus().toString() == 'USER_CREATED'}" class="alert alert-success alert-center" role="alert">
+        <p>Registration was end successfully</p>
+        <p>Activation link was send to email address: <span th:text="${email}"></span></p>
+    </div>
+
+    <div th:if="${registrationResponse != null and registrationResponse.getRegistryStatus().toString() != 'USER_CREATED'}" class="alert alert-danger alert-center" role="alert">
+        <p>Error occurred while registration process.</p>
+        <p th:text="${registrationResponse.getValidationError().getMessage()}"></p>
+        <a th:href="@{/registration}">Back to registration form</a>
     </div>
 
     <div class="footer" th:insert="fragments/footer.html :: footer"></div>
