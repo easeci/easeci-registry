@@ -11,6 +11,10 @@ bcrypt:
 file:
   extension: .jar
 
+upload:
+  token:
+    quantity-per-day: 5
+
 tmp:
   dir: /tmp/easeci/registry
 

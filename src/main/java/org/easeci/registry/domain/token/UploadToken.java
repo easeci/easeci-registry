@@ -1,16 +1,25 @@
 package org.easeci.registry.domain.token;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
+import lombok.*;
 
+import javax.persistence.*;
+import java.util.Date;
+
+@Data
 @Entity
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
+@Table(name = "upload_token")
 public class UploadToken {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-
+    private boolean isInUse;
+    private Date releaseDate;
+    private Date useDate;
+    private Long releasedForVersionId;
+    private String token;
 }
