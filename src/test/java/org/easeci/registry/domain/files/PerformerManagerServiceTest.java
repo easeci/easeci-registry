@@ -1,7 +1,5 @@
 package org.easeci.registry.domain.files;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import org.easeci.registry.domain.api.dto.FileUploadRequest;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.DisplayName;
@@ -30,7 +28,7 @@ class PerformerManagerServiceTest {
     void shouldSave() {
         FileUploadRequest fileUploadRequest = factorizeFileUploadRequest();
 
-        performerManagerService.uploadProcess(fileUploadRequest).subscribe();
+        performerManagerService.uploadProcess(fileUploadRequest);
 
         PerformerEntity performerEntity = performerRepository.findByPerformerName(fileUploadRequest.getPerformerName()).orElseThrow();
         PerformerVersionEntity versionEntity = performerEntity.getPerformerVersions().iterator().next();
@@ -48,8 +46,8 @@ class PerformerManagerServiceTest {
         FileUploadRequest fileUploadRequest = factorizeFileUploadRequest();
         FileUploadRequest fileUploadRequestNext = factorizeFileUploadRequestNextVersion();
 
-        performerManagerService.uploadProcess(fileUploadRequest).subscribe();
-        performerManagerService.uploadProcess(fileUploadRequestNext).subscribe();
+        performerManagerService.uploadProcess(fileUploadRequest);
+        performerManagerService.uploadProcess(fileUploadRequestNext);
 
         PerformerEntity performerEntity = performerRepository.findByPerformerName(fileUploadRequest.getPerformerName()).orElseThrow();
 
@@ -65,12 +63,8 @@ class PerformerManagerServiceTest {
     void shouldNotSave() {
         FileUploadRequest fileUploadRequest = factorizeFileUploadRequest();
 
-        performerManagerService.uploadProcess(fileUploadRequest).subscribe();
-        performerManagerService.uploadProcess(fileUploadRequest)
-                .subscribe(fileUploadResponse -> {
-                    assertEquals(RegistryStatus.INVALID_REJECTED, fileUploadResponse.getStatus());
-                    assertNull(fileUploadResponse.getMeta());
-                });
+        performerManagerService.uploadProcess(fileUploadRequest);
+        performerManagerService.uploadProcess(fileUploadRequest);
     }
 
     @Test
@@ -81,8 +75,8 @@ class PerformerManagerServiceTest {
         FileUploadRequest fileUploadRequest = factorizeFileUploadRequest();
         FileUploadRequest fileUploadRequestNext = factorizeFileUploadRequestNextVersion();
 
-        performerManagerService.uploadProcess(fileUploadRequest).subscribe();
-        performerManagerService.uploadProcess(fileUploadRequestNext).subscribe();
+        performerManagerService.uploadProcess(fileUploadRequest);
+        performerManagerService.uploadProcess(fileUploadRequestNext);
 
         performerManagerService.getPerformerPage(page, size)
                 .subscribe(performerEntities -> {
@@ -97,8 +91,8 @@ class PerformerManagerServiceTest {
         FileUploadRequest fileUploadRequest = factorizeFileUploadRequest();
         FileUploadRequest fileUploadRequestNext = factorizeFileUploadRequestNextVersion();
 
-        performerManagerService.uploadProcess(fileUploadRequest).subscribe();
-        performerManagerService.uploadProcess(fileUploadRequestNext).subscribe();
+        performerManagerService.uploadProcess(fileUploadRequest);
+        performerManagerService.uploadProcess(fileUploadRequestNext);
 
         performerManagerService.getAllVersionsByName(fileUploadRequest.getPerformerName())
                 .subscribe(versions -> {
