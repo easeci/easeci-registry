@@ -1,6 +1,7 @@
 package org.easeci.registry.domain.files;
 
 import io.vavr.control.Validation;
+import org.easeci.registry.domain.token.UploadTokenService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -13,11 +14,13 @@ import java.nio.file.Paths;
 import java.util.NoSuchElementException;
 import java.util.jar.Attributes;
 
+import static org.easeci.registry.utils.CommonUtils.factorizeCompleteFileRepresentation;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 
 class JarFileValidatorTest {
     private PerformerRepository performerRepository;
+    private UploadTokenService tokenService;
     private JarFileValidator jarFileValidator;
 
     private final static String TEMPORARY_STORAGE = "/tmp/",
@@ -26,7 +29,8 @@ class JarFileValidatorTest {
     @BeforeEach
     void setup() {
         this.performerRepository = Mockito.mock(PerformerRepository.class);
-        this.jarFileValidator = JarFileValidator.of(performerRepository, TEMPORARY_STORAGE, FILE_EXTENSION);
+        this.tokenService = Mockito.mock(UploadTokenService.class);
+        this.jarFileValidator = JarFileValidator.of(tokenService, performerRepository, new JarFileValidatorHelper(TEMPORARY_STORAGE, FILE_EXTENSION));
     }
 
     @Test
@@ -133,5 +137,114 @@ class JarFileValidatorTest {
         assertAll(() -> assertNotNull(validation),
                 () -> assertFalse(validation.isValid()),
                 () -> assertEquals("Plugin just exists in database", validation.getError()));
+    }
+
+    @Test
+    @DisplayName("Should pass validation when metadata is correct")
+    void isMetadataCorrectPositiveTest() {
+        FileRepresentation fileRepresentation = factorizeCompleteFileRepresentation();
+
+        Validation<String, Boolean> validation = jarFileValidator.isMetadataCorrect(fileRepresentation.getMeta());
+
+        assertAll(() -> assertNotNull(validation),
+                () -> assertTrue(validation.isValid()),
+                () -> assertThrows(NoSuchElementException.class, validation::getError));
+    }
+
+    @Test
+    @DisplayName("Should not pass validation when some metadata is missing")
+    void isMetadataCorrectNegativeTest() {
+        FileRepresentation fileRepresentation = factorizeCompleteFileRepresentation();
+        fileRepresentation.getMeta().setAuthorEmail(null);
+
+        Validation<String, Boolean> validation = jarFileValidator.isMetadataCorrect(fileRepresentation.getMeta());
+
+        assertAll(() -> assertNotNull(validation),
+                () -> assertFalse(validation.isValid()),
+                () -> assertEquals("Some of metadata of file uploading object is missing", validation.getError()));
+    }
+
+    @Test
+    @DisplayName("Should pass validation when token in jar file is available in database")
+    void isValidTokenContainsPositiveTest() {
+        final String ATTR_NAME = "Token";
+        final String TOKEN = "i2mub7bydvtf67ybbkjn880m";
+        Mockito.when(tokenService.isTokenAvailable(TOKEN)).thenReturn(true);
+
+        Attributes attributes = new Attributes();
+        attributes.put(new Attributes.Name(ATTR_NAME), TOKEN);
+
+        Validation<String, Boolean> validation = jarFileValidator.isValidTokenContains(attributes);
+
+        assertAll(() -> assertNotNull(validation),
+                () -> assertTrue(validation.isValid()),
+                () -> assertThrows(NoSuchElementException.class, validation::getError));
+    }
+
+    @Test
+    @DisplayName("Should not pass validation when token in jar file is not available in database - another plugin is assigned to this one")
+    void isValidTokenContainsNegativeTest() {
+        final String ATTR_NAME = "Token";
+        final String TOKEN = "i2mub7bydvtf67ybbkjn880m";
+        Mockito.when(tokenService.isTokenAvailable(TOKEN)).thenReturn(false);
+
+        Attributes attributes = new Attributes();
+        attributes.put(new Attributes.Name(ATTR_NAME), TOKEN);
+
+        Validation<String, Boolean> validation = jarFileValidator.isValidTokenContains(attributes);
+
+        assertAll(() -> assertNotNull(validation),
+                () -> assertFalse(validation.isValid()),
+                () -> assertEquals("Your 'Token' is invalid. Cannot match it with available tokens", validation.getError()));
+    }
+
+    @Test
+    @DisplayName("Should pass validation when 'Implements' property exists in MANIFEST.md")
+    void isValidImplementsPropertyPositiveTest() {
+        Attributes attributes = new Attributes();
+        attributes.put(new Attributes.Name("Implements"), "...");
+
+        Validation<String, Boolean> validation = jarFileValidator.isValidImplementsProperty(attributes);
+
+        assertAll(() -> assertNotNull(validation),
+                () -> assertTrue(validation.isValid()),
+                () -> assertThrows(NoSuchElementException.class, validation::getError));
+    }
+
+    @Test
+    @DisplayName("Should not pass validation when 'Implements' property not exists in MANIFEST.md")
+    void isValidImplementsPropertyNegativeTest() {
+        Attributes attributes = new Attributes();
+
+        Validation<String, Boolean> validation = jarFileValidator.isValidImplementsProperty(attributes);
+
+        assertAll(() -> assertNotNull(validation),
+                () -> assertFalse(validation.isValid()),
+                () -> assertEquals("'Implements' property not exists in MANIFEST.md", validation.getError()));
+    }
+
+    @Test
+    @DisplayName("Should pass validation when 'Entry-Class' property exists in MANIFEST.md")
+    void isValidEntryClassPropertyPositiveTest() {
+        Attributes attributes = new Attributes();
+        attributes.put(new Attributes.Name("Entry-Class"), "...");
+
+        Validation<String, Boolean> validation = jarFileValidator.isValidEntryClassProperty(attributes);
+
+        assertAll(() -> assertNotNull(validation),
+                () -> assertTrue(validation.isValid()),
+                () -> assertThrows(NoSuchElementException.class, validation::getError));
+    }
+
+    @Test
+    @DisplayName("Should not pass validation when 'Entry-Class' property not exists in MANIFEST.md")
+    void isValidEntryClassPropertyNegativeTest() {
+        Attributes attributes = new Attributes();
+
+        Validation<String, Boolean> validation = jarFileValidator.isValidEntryClassProperty(attributes);
+
+        assertAll(() -> assertNotNull(validation),
+                () -> assertFalse(validation.isValid()),
+                () -> assertEquals("'Entry-Class' property not exists in MANIFEST.md", validation.getError()));
     }
 }

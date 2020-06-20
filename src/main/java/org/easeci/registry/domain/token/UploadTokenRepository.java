@@ -11,4 +11,7 @@ interface UploadTokenRepository extends JpaRepository<UploadToken, Long> {
     int countAllFreeTokens();
 
     Optional<UploadToken> findByToken(String token);
+
+    @Query("select t.isInUse from UploadToken t where t.token = :token")
+    boolean isTokenInUse(String token);
 }
