@@ -11,7 +11,7 @@ import java.util.stream.IntStream;
 
 @Slf4j
 @Service
-class UploadTokenService {
+public class UploadTokenService {
     private UploadTokenRepository uploadTokenRepository;
 
     @Value("${upload.token.quantity-per-day}")
@@ -39,6 +39,10 @@ class UploadTokenService {
                 })
                 .map(uploadToken -> uploadTokenRepository.save(uploadToken))
                 .orElseThrow();
+    }
+
+    public boolean isTokenAvailable(String token) {
+        return !uploadTokenRepository.isTokenInUse(token);
     }
 
     private List<UploadToken> generateTokens(int amount) {

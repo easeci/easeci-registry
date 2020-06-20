@@ -1,13 +1,14 @@
 package org.easeci.registry.domain.files;
 
 import io.vavr.Function2;
-import io.vavr.Function8;
+import io.vavr.Function7;
 import io.vavr.collection.Seq;
 import io.vavr.control.Validation;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.easeci.registry.domain.files.dto.AddPerformerResponse;
+import org.easeci.registry.domain.token.UploadTokenService;
 
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -22,10 +23,11 @@ import static java.util.Objects.nonNull;
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 public class JarFileValidator {
     private PerformerRepository performerRepository;
+    private UploadTokenService tokenService;
     private JarFileValidatorHelper jarFileValidatorHelper;
 
-    public static JarFileValidator of(PerformerRepository performerRepository, String temporaryStorage, String fileExtension) {
-        return new JarFileValidator(performerRepository, new JarFileValidatorHelper(temporaryStorage, fileExtension));
+    public static JarFileValidator of(UploadTokenService tokenService, PerformerRepository performerRepository, JarFileValidatorHelper jarFileValidatorHelper) {
+        return new JarFileValidator(performerRepository, tokenService, jarFileValidatorHelper);
     }
 
     public AddPerformerResponse check(FileRepresentation fileRepresentation) {
@@ -42,16 +44,15 @@ public class JarFileValidator {
                         isFileNotExistsOnTmpStorage(pathTmp),
                         isExtensionNotExists(fileRepresentation.getMeta().getPerformerName(), fileRepresentation.getMeta().getPerformerVersion()),
                         isMetadataCorrect(fileRepresentation.getMeta()),
-                        isJarFileNameMatchesMetadata(fileRepresentation.getMeta(), attributes),
                         isValidTokenContains(attributes),
                         isValidImplementsProperty(attributes),
                         isValidEntryClassProperty(attributes),
                         jarFileValidatorHelper.deleteTemporaryFile(pathTmp)
                                 ? Validation.valid(true)
                                 : Validation.invalid("Error occurred while deleting temporary files")
-                ).ap((Function8<Boolean, Boolean, Boolean, Boolean, Boolean, Boolean, Boolean, Boolean, Boolean>)
-                        (conditionA, conditionB, conditionC, conditionD, conditionE, conditionF, conditionG, conditionH)
-                                -> conditionA && conditionB && conditionC && conditionD && conditionE && conditionF && conditionG && conditionH);
+                ).ap((Function7<Boolean, Boolean, Boolean, Boolean, Boolean, Boolean, Boolean, Boolean>)
+                        (conditionA, conditionB, conditionC, conditionD, conditionE, conditionF, conditionG)
+                                -> conditionA && conditionB && conditionC && conditionD && conditionE && conditionF && conditionG);
 
         return Stream.of(preValidation, validationSequence)
                 .map(this::transformSequence)
@@ -85,23 +86,34 @@ public class JarFileValidator {
     }
 
     public Validation<String, Boolean> isMetadataCorrect(FileRepresentation.FileMeta fileMeta) {
-        return null;
-    }
-
-    public Validation<String, Boolean> isJarFileNameMatchesMetadata(FileRepresentation.FileMeta fileMeta, Attributes attributes) {
-        return null;
+        return (nonNull(fileMeta.getAuthorFullname()) && !fileMeta.getAuthorFullname().isEmpty()) &&
+                (nonNull(fileMeta.getAuthorEmail()) && !fileMeta.getAuthorEmail().isEmpty()) &&
+                (nonNull(fileMeta.getPerformerName()) && !fileMeta.getPerformerName().isEmpty()) &&
+                (nonNull(fileMeta.getPerformerVersion()) && !fileMeta.getPerformerVersion().isEmpty())
+                ? Validation.valid(true)
+                : Validation.invalid("Some of metadata of file uploading object is missing");
     }
 
     public Validation<String, Boolean> isValidTokenContains(Attributes attributes) {
-        return null;
+        final String ATTR_NAME = "Token";
+        return (nonNull(attributes.getValue(ATTR_NAME)) &&
+                tokenService.isTokenAvailable(attributes.getValue(ATTR_NAME)))
+                ? Validation.valid(true)
+                : Validation.invalid("Your 'Token' is invalid. Cannot match it with available tokens");
     }
 
     public Validation<String, Boolean> isValidImplementsProperty(Attributes attributes) {
-        return null;
+        final String ATTR_NAME = "Implements";
+        return (nonNull(attributes.getValue(ATTR_NAME)) && !attributes.getValue(ATTR_NAME).isEmpty())
+                ? Validation.valid(true)
+                : Validation.invalid("'Implements' property not exists in MANIFEST.md");
     }
 
     public Validation<String, Boolean> isValidEntryClassProperty(Attributes attributes) {
-        return null;
+        final String ATTR_NAME = "Entry-Class";
+        return (nonNull(attributes.getValue(ATTR_NAME)) && !attributes.getValue(ATTR_NAME).isEmpty())
+                ? Validation.valid(true)
+                : Validation.invalid("'Entry-Class' property not exists in MANIFEST.md");
     }
 
     private AddPerformerResponse merge(Set<AddPerformerResponse> addPerformerResponses) {

@@ -6,6 +6,7 @@ import org.easeci.registry.domain.api.dto.FileUploadResponse;
 import org.easeci.registry.domain.files.dto.AddPerformerResponse;
 import org.easeci.registry.domain.files.dto.PerformerResponse;
 import org.easeci.registry.domain.files.dto.PerformerVersionResponse;
+import org.easeci.registry.domain.token.UploadTokenService;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -26,18 +27,20 @@ import static java.util.Objects.isNull;
 public class PerformerManagerService {
     private FileInteractor fileInteractor;
     private PerformerRepository performerRepository;
+    private UploadTokenService tokenService;
 
     @Value("${tmp.dir}") private String temporaryStorage;
     @Value("${file.extension}") private String fileExtension;
 
-    public PerformerManagerService(FileInteractor fileInteractor, PerformerRepository performerRepository) {
+    public PerformerManagerService(FileInteractor fileInteractor, PerformerRepository performerRepository, UploadTokenService tokenService) {
         this.fileInteractor = fileInteractor;
         this.performerRepository = performerRepository;
+        this.tokenService = tokenService;
     }
 
     public FileUploadResponse uploadProcess(FileUploadRequest request) {
         FileRepresentation fileRepresentation = prepare(request);
-        AddPerformerResponse addPerformerResponse = JarFileValidator.of(performerRepository, temporaryStorage, fileExtension).check(fileRepresentation);
+        AddPerformerResponse addPerformerResponse = JarFileValidator.of(tokenService, performerRepository, new JarFileValidatorHelper(temporaryStorage, fileExtension)).check(fileRepresentation);
         if (!addPerformerResponse.isAddedCorrectly()) {
             return FileUploadResponse.builder()
                     .isUploaded(false)
