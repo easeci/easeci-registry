@@ -1,169 +1,133 @@
 package org.easeci.registry.domain.files;
 
-import lombok.*;
+import io.vavr.Function2;
+import io.vavr.Function8;
+import io.vavr.collection.Seq;
+import io.vavr.control.Validation;
+import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.easeci.registry.domain.files.dto.AddPerformerResponse;
 
-import java.io.File;
-import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.nio.file.StandardOpenOption;
 import java.util.*;
-import java.util.function.Predicate;
 import java.util.jar.Attributes;
-import java.util.jar.JarFile;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
-import static org.easeci.registry.domain.files.PathBuilder.buildPath;
+import static java.util.Objects.nonNull;
 
 @Slf4j
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 public class JarFileValidator {
     private PerformerRepository performerRepository;
-    private String temporaryStorage;
-    private String fileExtension;
+    private JarFileValidatorHelper jarFileValidatorHelper;
 
     public static JarFileValidator of(PerformerRepository performerRepository, String temporaryStorage, String fileExtension) {
-        return new JarFileValidator(performerRepository, temporaryStorage, fileExtension);
+        return new JarFileValidator(performerRepository, new JarFileValidatorHelper(temporaryStorage, fileExtension));
     }
 
     public AddPerformerResponse check(FileRepresentation fileRepresentation) {
         log.info("Checking validity of incoming file: {}", fileRepresentation.toString());
-        Path pathTmp = saveTmp(fileRepresentation.getPayload(), fileRepresentation.getMeta().getPerformerName(), fileRepresentation.getMeta().getPerformerVersion());
-//        Attributes attributes = extract(pathTmp.toFile());
+        Path pathTmp = jarFileValidatorHelper.saveTmp(fileRepresentation.getPayload(), fileRepresentation.getMeta().getPerformerName(), fileRepresentation.getMeta().getPerformerVersion());
+        Attributes attributes = jarFileValidatorHelper.extract(pathTmp.toFile());
 
-        boolean fileNotExistsOnTmpStorage = isFileNotExistsOnTmpStorage(pathTmp);
-        boolean extensionNotExists = isExtensionNotExists(fileRepresentation.getMeta().getPerformerName(), fileRepresentation.getMeta().getPerformerVersion());
-//        boolean jarAttributesValidity = Pipeline.make(attributes)
-//                .join(attributeValue -> attributeValue.startsWith("io.easeci.extension"), "Implements")
-//                .join(Objects::nonNull, "Entry-Class")
-//                .join(this::checkUuid, "Token")
-//                .evaluate()
-//                .success();
+        Validation<Seq<String>, Boolean> preValidation =
+                Validation.combine(isAttributesNull(attributes), isAttributesHasMinSize(attributes))
+                        .ap((Function2<Boolean, Boolean, Boolean>) Boolean::logicalAnd);
 
+        Validation<Seq<String>, Boolean> validationSequence =
+                Validation.combine(
+                        isFileNotExistsOnTmpStorage(pathTmp),
+                        isExtensionNotExists(fileRepresentation.getMeta().getPerformerName(), fileRepresentation.getMeta().getPerformerVersion()),
+                        isMetadataCorrect(fileRepresentation.getMeta()),
+                        isJarFileNameMatchesMetadata(fileRepresentation.getMeta(), attributes),
+                        isValidTokenContains(attributes),
+                        isValidImplementsProperty(attributes),
+                        isValidEntryClassProperty(attributes),
+                        jarFileValidatorHelper.deleteTemporaryFile(pathTmp)
+                                ? Validation.valid(true)
+                                : Validation.invalid("Error occurred while deleting temporary files")
+                ).ap((Function8<Boolean, Boolean, Boolean, Boolean, Boolean, Boolean, Boolean, Boolean, Boolean>)
+                        (conditionA, conditionB, conditionC, conditionD, conditionE, conditionF, conditionG, conditionH)
+                                -> conditionA && conditionB && conditionC && conditionD && conditionE && conditionF && conditionG && conditionH);
 
-
-//        boolean isTmpFileDeleted = deleteTemporaryFile(pathTmp);
-
-//        return fileNotExistsOnTmpStorage && extensionNotExists && jarAttributesValidity && isTmpFileDeleted;
-//        return fileNotExistsOnTmpStorage && extensionNotExists && isTmpFileDeleted;
-//        return AddPerformerResponse.of(false, List.of(new AddPerformerResponse.ValidationError("Cannot add property")));
-        return AddPerformerResponse.of(true, List.of());
+        return Stream.of(preValidation, validationSequence)
+                .map(this::transformSequence)
+                .reduce((a, b) -> merge(Set.of(a, b)))
+                .orElse(AddPerformerResponse.of(false, List.of(new AddPerformerResponse.ValidationError("Internal validation error occurred"))));
     }
 
-    private boolean deleteTemporaryFile(Path pathTmp) {
-        try {
-            return Files.deleteIfExists(pathTmp);
-        } catch (IOException e) {
-            e.printStackTrace();
-            return false;
-        }
+    public Validation<String, Boolean> isAttributesNull(Attributes attributes) {
+        return nonNull(attributes)
+                ? Validation.valid(true)
+                : Validation.invalid("Cannot read Attributes of manifest that should be placed in your .jar file");
     }
 
-    private boolean checkUuid(String attributeValue) {
-        try {
-            UUID.fromString(attributeValue);
-            return true;
-        } catch (Exception e) {
-            return false;
-        }
+    public Validation<String, Boolean> isAttributesHasMinSize(Attributes attributes) {
+        final int MIN_SIZE = 4;
+        return nonNull(attributes) && attributes.size() >= MIN_SIZE
+                ? Validation.valid(true)
+                : Validation.invalid("Manifest has less than " + MIN_SIZE + " attributes");
     }
 
-    private Path saveTmp(byte[] received, String extensionName, String extensionVersion) {
-        Path pathTmp = buildPath(temporaryStorage, fileExtension, extensionName, extensionVersion);
-        try {
-            Files.createDirectories(pathTmp.getParent());
-            Files.write(pathTmp, received, StandardOpenOption.CREATE);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        return pathTmp;
+    public Validation<String, Boolean> isFileNotExistsOnTmpStorage(Path filePath) {
+        return Files.notExists(filePath)
+                ? Validation.valid(true)
+                : Validation.invalid("Temporary file for validation exists. Maybe you download same plugin twice and process not ends yet?");
     }
 
-    private Attributes extract(File file) {
-        try {
-            return new JarFile(file).getManifest().getMainAttributes();
-        } catch (IOException e) {
-            e.printStackTrace();
-            return null;
-        }
+    public Validation<String, Boolean> isExtensionNotExists(String extensionName, String extensionVersion) {
+        return !(performerRepository.isVersionExists(extensionName, extensionVersion) > 0)
+                ? Validation.valid(true)
+                : Validation.invalid("Plugin just exists in database");
     }
 
-    private boolean isFileNotExistsOnTmpStorage(Path filePath) {
-        return Files.exists(filePath);
+    public Validation<String, Boolean> isMetadataCorrect(FileRepresentation.FileMeta fileMeta) {
+        return null;
     }
 
-    private boolean isExtensionNotExists(String extensionName, String extensionVersion) {
-        return performerRepository.isVersionExists(extensionName, extensionVersion) == 0;
+    public Validation<String, Boolean> isJarFileNameMatchesMetadata(FileRepresentation.FileMeta fileMeta, Attributes attributes) {
+        return null;
     }
 
-    private boolean isMetadataCorrect(FileRepresentation.FileMeta fileMeta) {
-        return true;
+    public Validation<String, Boolean> isValidTokenContains(Attributes attributes) {
+        return null;
     }
 
-}
-
-@NoArgsConstructor(access = AccessLevel.PRIVATE)
-@AllArgsConstructor(access = AccessLevel.PRIVATE)
-class Pipeline {
-    private PipelineSet<Item> itemSet;
-    private Attributes attributes;
-
-    static Pipeline make(Attributes attributes) {
-        return new Pipeline(new PipelineSet<>(), attributes);
+    public Validation<String, Boolean> isValidImplementsProperty(Attributes attributes) {
+        return null;
     }
 
-    Pipeline join(Predicate<String> condition, String attribute) {
-        this.itemSet.add(new Item(condition, attribute));
-        return this;
+    public Validation<String, Boolean> isValidEntryClassProperty(Attributes attributes) {
+        return null;
     }
 
-    PipelineSet<Result> evaluate() {
-        return new PipelineSet<>(itemSet.stream()
-                .map(this::evaluateItem)
-                .collect(Collectors.toSet()));
+    private AddPerformerResponse merge(Set<AddPerformerResponse> addPerformerResponses) {
+        boolean isAddedCorrectly = addPerformerResponses.stream()
+                .anyMatch(addPerformerResponse -> !addPerformerResponse.isAddedCorrectly());
+        List<AddPerformerResponse.ValidationError> validationErrors = addPerformerResponses.stream()
+                .filter(Objects::nonNull)
+                .flatMap(addPerformerResponse -> addPerformerResponse.getValidationErrorList().stream()).collect(Collectors.toList());
+        return AddPerformerResponse.of(isAddedCorrectly, validationErrors);
     }
 
-    private Result evaluateItem(Item item) {
-        String attributeValue = attributes.getValue(item.attribute);
-        boolean result = item.condition.test(attributeValue);
-        return Result.of(result, !result
-                ? Optional.of("Manifest's attribute named: " + item.getAttribute() + " is not acceptable with value: " + attributeValue)
-                : Optional.empty());
+    private AddPerformerResponse transform(Validation<String, Boolean> validation) {
+        Optional<String> error = Optional.ofNullable(validation.isInvalid() ? validation.getError() : null);
+        List<AddPerformerResponse.ValidationError> validationErrors = new ArrayList<>();
+        error.map(AddPerformerResponse.ValidationError::new)
+                .ifPresent(validationErrors::add);
+        return AddPerformerResponse.of(validation.isValid(), validationErrors);
     }
 
-    @Getter
-    @ToString
-    @EqualsAndHashCode
-    @AllArgsConstructor
-    private class Item {
-        private Predicate<String> condition;
-        private String attribute;
+    private AddPerformerResponse transformSequence(Validation<Seq<String>, Boolean> validationSequence) {
+        List<String> errors = validationSequence.isInvalid() ? validationSequence.getError().toJavaList() : Collections.emptyList();
+        return AddPerformerResponse.of(
+                validationSequence.isValid(),
+                errors.stream()
+                        .map(AddPerformerResponse.ValidationError::new)
+                        .collect(Collectors.toList())
+        );
     }
-
-    @NoArgsConstructor
-    static class PipelineSet<T> extends HashSet<T> {
-        public PipelineSet(Collection<? extends T> resultSet) {
-            super(resultSet);
-        }
-
-        boolean success() {
-            return this.stream()
-                    .allMatch(t -> {
-                        Result result = (Result) t;
-                        return result.isSuccess();
-                    });
-        }
-    }
-}
-
-@Getter
-@ToString
-@EqualsAndHashCode
-@AllArgsConstructor(staticName = "of")
-class Result {
-    private boolean isSuccess;
-    private Optional<String> message;
 }
