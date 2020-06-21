@@ -1,20 +1,29 @@
 package org.easeci.registry.domain.files;
 
+import org.apache.tomcat.util.http.fileupload.FileUtils;
 import org.easeci.registry.domain.api.dto.FileUploadRequest;
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Test;
+import org.easeci.registry.domain.token.UploadTokenService;
+import org.junit.jupiter.api.*;
+import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.ActiveProfiles;
+
+import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 
 import static org.easeci.registry.utils.CommonUtils.factorizeFileUploadRequest;
 import static org.easeci.registry.utils.CommonUtils.factorizeFileUploadRequestNextVersion;
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.ArgumentMatchers.any;
 
 @SpringBootTest
 @ActiveProfiles({ "test" })
 class PerformerManagerServiceTest {
+    private static String DIRECTORY_PATH = "/tmp/ease/registry";
 
     @Autowired
     private PerformerManagerService performerManagerService;
@@ -22,10 +31,20 @@ class PerformerManagerServiceTest {
     @Autowired
     private PerformerRepository performerRepository;
 
+    @MockBean
+    private UploadTokenService tokenService;
+
+    @BeforeAll
+    static void setup() throws IOException {
+        Files.createDirectories(Paths.get(DIRECTORY_PATH));
+    }
+
     @Test
     @DisplayName("Should save entity with success and should save file in specified path " +
             "-> performer with this name not exists before")
     void shouldSave() {
+        Mockito.when(tokenService.isTokenAvailable(any())).thenReturn(true);
+
         FileUploadRequest fileUploadRequest = factorizeFileUploadRequest();
 
         performerManagerService.uploadProcess(fileUploadRequest);
@@ -43,6 +62,7 @@ class PerformerManagerServiceTest {
     @DisplayName("Should save version entity with success and should save file in specified path " +
             "-> performer with this name just exist and only new version should be appended")
     void shouldSaveVersion() {
+        Mockito.when(tokenService.isTokenAvailable(any())).thenReturn(true);
         FileUploadRequest fileUploadRequest = factorizeFileUploadRequest();
         FileUploadRequest fileUploadRequestNext = factorizeFileUploadRequestNextVersion();
 
@@ -61,6 +81,8 @@ class PerformerManagerServiceTest {
     @DisplayName("Should not save entity and should not override file when trying to upload" +
             " the same request twice")
     void shouldNotSave() {
+        Mockito.when(tokenService.isTokenAvailable(any())).thenReturn(true);
+
         FileUploadRequest fileUploadRequest = factorizeFileUploadRequest();
 
         performerManagerService.uploadProcess(fileUploadRequest);
@@ -70,6 +92,8 @@ class PerformerManagerServiceTest {
     @Test
     @DisplayName("Should get page correctly with few elements in repository")
     void shouldGetPage() {
+        Mockito.when(tokenService.isTokenAvailable(any())).thenReturn(true);
+
         final int page = 0;
         final int size = 10;
         FileUploadRequest fileUploadRequest = factorizeFileUploadRequest();
@@ -88,6 +112,8 @@ class PerformerManagerServiceTest {
     @Test
     @DisplayName("Should get all versions of Performer by specified name with success")
     void shouldGetAllVersions() {
+        Mockito.when(tokenService.isTokenAvailable(any())).thenReturn(true);
+
         FileUploadRequest fileUploadRequest = factorizeFileUploadRequest();
         FileUploadRequest fileUploadRequestNext = factorizeFileUploadRequestNextVersion();
 
@@ -108,5 +134,10 @@ class PerformerManagerServiceTest {
     @AfterEach
     void tearDown() {
         performerRepository.deleteAll();
+    }
+
+    @AfterAll
+    static void cleanup() throws IOException {
+        FileUtils.deleteDirectory(new File(DIRECTORY_PATH));
     }
 }

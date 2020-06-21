@@ -21,6 +21,7 @@ import org.springframework.web.multipart.MultipartFile;
 import reactor.core.publisher.Mono;
 
 import javax.validation.Valid;
+import javax.validation.constraints.NotNull;
 import java.io.IOException;
 import java.util.Set;
 
@@ -71,7 +72,7 @@ class RegistryController {
 
     @PostMapping("/performer/upload/form")
     @ResponseStatus(HttpStatus.OK)
-    String uploadForm(@Valid @ModelAttribute("request") FileUploadForm request, BindingResult bindingResult, ModelMap model) {
+    String uploadForm(@Valid @NotNull @ModelAttribute("request") FileUploadForm request, BindingResult bindingResult, ModelMap model) {
         if (bindingResult.hasErrors()) {
             log.info("Errors occurred while request body validation: {}", bindingResult.getAllErrors());
             model.addAttribute("isDataAdded", "false");
@@ -85,8 +86,8 @@ class RegistryController {
 
     @PostMapping("/performer/upload")
     @ResponseStatus(HttpStatus.OK)
-    String upload(@ModelAttribute("request") FileUploadForm request,
-                  @ModelAttribute("file") MultipartFile file, ModelMap model) throws IOException {
+    String upload(@Valid @NotNull @ModelAttribute("request") FileUploadForm request,
+                  @Valid @NotNull @ModelAttribute("file") MultipartFile file, ModelMap model) throws IOException {
         log.info("Received completed request with multipart file to register new plugin: {}", request.toString());
         FileUploadForm req = (FileUploadForm) model.getAttribute("request");
         FileUploadRequest fileUploadRequest = prepare(file, req);

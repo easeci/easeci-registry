@@ -80,7 +80,7 @@
         <div class="add-description" th:if="${isDescriptionAdded == 'true'}">
             <p>Description added correctly</p>
         </div>
-        <a th:href="@{'/performer/' + ${performerName}}">Preview plugin</a>
+        <a th:href="@{'/performers/' + ${performerName}}">Preview plugin</a>
     </div>
     <div class="alert alert-danger" role="alert" th:if="${isFileSaved == 'false' and isDataAdded == 'true'}">
         <p>Something went wrong and Performer was not added. Errors occurred:</p>
