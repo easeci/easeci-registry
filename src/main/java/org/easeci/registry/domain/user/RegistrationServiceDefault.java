@@ -1,6 +1,8 @@
 package org.easeci.registry.domain.user;
 
 import lombok.extern.slf4j.Slf4j;
+import org.easeci.registry.domain.mail.MailSendRequest;
+import org.easeci.registry.domain.mail.MailerFacade;
 import org.easeci.registry.domain.user.dto.RegistrationRequest;
 import org.easeci.registry.domain.user.dto.RegistrationResponse;
 import org.springframework.beans.factory.annotation.Value;
@@ -9,8 +11,8 @@ import org.springframework.stereotype.Service;
 
 import java.util.Base64;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.Optional;
-import java.util.concurrent.CompletableFuture;
 
 import static java.util.Objects.nonNull;
 import static org.easeci.registry.domain.files.RegistryStatus.*;
@@ -21,15 +23,17 @@ class RegistrationServiceDefault implements RegistrationService {
     private RegistryUserRepository registryUserRepository;
     private ActivationTokenRepository activationTokenRepository;
     private PasswordEncoder passwordEncoder;
+    private MailerFacade mailerFacade;
 
     @Value("${activation.url}")
     private String activationUrl;
 
-    RegistrationServiceDefault(RegistryUserRepository registryUserRepository,
-                               ActivationTokenRepository activationTokenRepository, PasswordEncoder passwordEncoder) {
+    RegistrationServiceDefault(RegistryUserRepository registryUserRepository, ActivationTokenRepository activationTokenRepository,
+                               PasswordEncoder passwordEncoder, MailerFacade mailerFacade) {
         this.registryUserRepository = registryUserRepository;
         this.activationTokenRepository = activationTokenRepository;
         this.passwordEncoder = passwordEncoder;
+        this.mailerFacade = mailerFacade;
     }
 
     @Override
@@ -78,7 +82,7 @@ class RegistrationServiceDefault implements RegistrationService {
     private RegistrationResponse onSuccess(RegistryUser registryUser) {
         log.info("{} correctly registered in service", registryUser.getUsername());
         ActivationTokenEntity activationTokenEntity = prepare(registryUser);
-        CompletableFuture.runAsync(() -> sendMail(activationTokenEntity, registryUser.getEmail()));
+        sendMail(activationTokenEntity, registryUser.getEmail(), registryUser.getUsername());
         return nonNull(registryUser.getId()) ? RegistrationResponse.of(USER_CREATED) : RegistrationResponse.of(REGISTRATION_ERROR);
     }
 
@@ -93,7 +97,16 @@ class RegistrationServiceDefault implements RegistrationService {
         return activationUrl.concat(new String(Base64.getEncoder().encode(activationTokenEntity.getActivationToken().getBytes())));
     }
 
-    private void sendMail(ActivationTokenEntity activationTokenEntity, String email) {
-        System.out.println("Activation link: " + prepareActivationLink(activationTokenEntity));
+    private void sendMail(ActivationTokenEntity activationTokenEntity, String email, String username) {
+        String link = prepareActivationLink(activationTokenEntity);
+        String subject = "EaseCI registration";
+        mailerFacade.sendMailAsync(MailSendRequest.builder()
+                .subject(subject)
+                .emailAddress(email)
+                .templateName("mail/registration-mail.html")
+                .variables(new HashMap<>() {{
+                    put("username", username);
+                    put("link", link);
+                }}).build());
     }
 }
