@@ -3,6 +3,8 @@ package org.easeci.registry.utils;
 import org.easeci.registry.domain.api.dto.FileUploadRequest;
 import org.easeci.registry.domain.files.FileRepresentation;
 
+import java.io.IOException;
+import java.io.InputStream;
 import java.time.LocalDateTime;
 
 public class CommonUtils {
@@ -38,7 +40,7 @@ public class CommonUtils {
                 .company("Ease CI")
                 .performerName("Docker")
                 .performerVersion("0.0.1")
-                .multipartFile(scriptExample.getBytes())
+                .multipartFile(readSampleJarFromResources())
                 .build();
     }
 
@@ -49,7 +51,7 @@ public class CommonUtils {
                 .company("Ease CI")
                 .performerName("Docker")
                 .performerVersion("0.0.2")
-                .multipartFile(scriptExample.getBytes())
+                .multipartFile(readSampleJarFromResources())
                 .build();
     }
 
@@ -61,11 +63,22 @@ public class CommonUtils {
                         .creationDate(LocalDateTime.now())
                         .performerName("pipeline-parser")
                         .performerVersion("0.0.1")
-                        .performerScriptBytes(scriptExample.getBytes().length)
+                        .performerScriptBytes(readSampleJarFromResources().length)
                         .documentationUrl("https://easeci.plugins.io/pipeline-parser/0.0.1/index.html")
                         .validated(false)
                         .build())
                 .payload(scriptExample.getBytes())
                 .build();
+    }
+
+    public static byte[] readSampleJarFromResources() {
+        ClassLoader classloader = Thread.currentThread().getContextClassLoader();
+        InputStream is = classloader.getResourceAsStream("welcome-page-0.0.1.jar");
+        try {
+            return is.readAllBytes();
+        } catch (IOException e) {
+            e.printStackTrace();
+            return new byte[] {1};
+        }
     }
 }

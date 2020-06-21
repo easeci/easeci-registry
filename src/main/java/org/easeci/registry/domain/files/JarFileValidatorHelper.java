@@ -9,6 +9,7 @@ import java.nio.file.Path;
 import java.nio.file.StandardOpenOption;
 import java.util.jar.Attributes;
 import java.util.jar.JarFile;
+import java.util.zip.ZipException;
 
 import static org.easeci.registry.domain.files.PathBuilder.buildPath;
 
@@ -40,6 +41,8 @@ public class JarFileValidatorHelper {
     Attributes extract(File file) {
         try {
             return new JarFile(file).getManifest().getMainAttributes();
+        } catch (ZipException e) {
+            return null;
         } catch (IOException e) {
             e.printStackTrace();
             return null;

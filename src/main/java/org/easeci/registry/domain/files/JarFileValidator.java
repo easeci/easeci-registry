@@ -1,7 +1,6 @@
 package org.easeci.registry.domain.files;
 
-import io.vavr.Function2;
-import io.vavr.Function7;
+import io.vavr.Function8;
 import io.vavr.collection.Seq;
 import io.vavr.control.Validation;
 import lombok.AccessLevel;
@@ -30,18 +29,25 @@ public class JarFileValidator {
         return new JarFileValidator(performerRepository, tokenService, jarFileValidatorHelper);
     }
 
-    public AddPerformerResponse check(FileRepresentation fileRepresentation) {
+    public AddPerformerResponse validationChain(FileRepresentation fileRepresentation) {
         log.info("Checking validity of incoming file: {}", fileRepresentation.toString());
+
+        Validation<String, Boolean> uploadedFileNotEmpty = isUploadedFileNotEmpty(fileRepresentation.getPayload());
+        if (uploadedFileNotEmpty.isInvalid()) return transform(uploadedFileNotEmpty);
+
         Path pathTmp = jarFileValidatorHelper.saveTmp(fileRepresentation.getPayload(), fileRepresentation.getMeta().getPerformerName(), fileRepresentation.getMeta().getPerformerVersion());
         Attributes attributes = jarFileValidatorHelper.extract(pathTmp.toFile());
 
-        Validation<Seq<String>, Boolean> preValidation =
-                Validation.combine(isAttributesNull(attributes), isAttributesHasMinSize(attributes))
-                        .ap((Function2<Boolean, Boolean, Boolean>) Boolean::logicalAnd);
+        Validation<String, Boolean> attributesNull = isAttributesNull(attributes);
+        if (attributesNull.isInvalid()) return transform(attributesNull);
+
+        Validation<String, Boolean> attributesHasMinSize = isAttributesHasMinSize(attributes);
+        if (attributesHasMinSize.isInvalid()) return transform(attributesHasMinSize);
 
         Validation<Seq<String>, Boolean> validationSequence =
                 Validation.combine(
-                        isFileNotExistsOnTmpStorage(pathTmp),
+                        isAttributesHasMinSize(attributes),
+                        isFileExistsOnTmpStorage(pathTmp),
                         isExtensionNotExists(fileRepresentation.getMeta().getPerformerName(), fileRepresentation.getMeta().getPerformerVersion()),
                         isMetadataCorrect(fileRepresentation.getMeta()),
                         isValidTokenContains(attributes),
@@ -50,14 +56,20 @@ public class JarFileValidator {
                         jarFileValidatorHelper.deleteTemporaryFile(pathTmp)
                                 ? Validation.valid(true)
                                 : Validation.invalid("Error occurred while deleting temporary files")
-                ).ap((Function7<Boolean, Boolean, Boolean, Boolean, Boolean, Boolean, Boolean, Boolean>)
-                        (conditionA, conditionB, conditionC, conditionD, conditionE, conditionF, conditionG)
-                                -> conditionA && conditionB && conditionC && conditionD && conditionE && conditionF && conditionG);
+                ).ap((Function8<Boolean, Boolean, Boolean, Boolean, Boolean, Boolean, Boolean, Boolean, Boolean>)
+                        (conditionA, conditionB, conditionC, conditionD, conditionE, conditionF, conditionG, conditionH)
+                                -> conditionA && conditionB && conditionC && conditionD && conditionE && conditionF && conditionG && conditionH);
 
-        return Stream.of(preValidation, validationSequence)
-                .map(this::transformSequence)
-                .reduce((a, b) -> merge(Set.of(a, b)))
+        return Stream.of(validationSequence)
+                .map(valSeq -> transformSequence(valSeq, attributes))
+                .reduce((a, b) -> merge(List.of(a, b)))
                 .orElse(AddPerformerResponse.of(false, List.of(new AddPerformerResponse.ValidationError("Internal validation error occurred"))));
+    }
+
+    public Validation<String, Boolean> isUploadedFileNotEmpty(byte[] uploadedFile) {
+        return (uploadedFile.length > 0)
+                ? Validation.valid(true)
+                : Validation.invalid("No file detected in your request or file is malformed");
     }
 
     public Validation<String, Boolean> isAttributesNull(Attributes attributes) {
@@ -73,8 +85,8 @@ public class JarFileValidator {
                 : Validation.invalid("Manifest has less than " + MIN_SIZE + " attributes");
     }
 
-    public Validation<String, Boolean> isFileNotExistsOnTmpStorage(Path filePath) {
-        return Files.notExists(filePath)
+    public Validation<String, Boolean> isFileExistsOnTmpStorage(Path filePath) {
+        return Files.exists(filePath)
                 ? Validation.valid(true)
                 : Validation.invalid("Temporary file for validation exists. Maybe you download same plugin twice and process not ends yet?");
     }
@@ -95,9 +107,9 @@ public class JarFileValidator {
     }
 
     public Validation<String, Boolean> isValidTokenContains(Attributes attributes) {
-        final String ATTR_NAME = "Token";
-        return (nonNull(attributes.getValue(ATTR_NAME)) &&
-                tokenService.isTokenAvailable(attributes.getValue(ATTR_NAME)))
+        String token = this.retrieveToken(attributes);
+        return (nonNull(token) &&
+                tokenService.isTokenAvailable(token))
                 ? Validation.valid(true)
                 : Validation.invalid("Your 'Token' is invalid. Cannot match it with available tokens");
     }
@@ -116,13 +128,16 @@ public class JarFileValidator {
                 : Validation.invalid("'Entry-Class' property not exists in MANIFEST.md");
     }
 
-    private AddPerformerResponse merge(Set<AddPerformerResponse> addPerformerResponses) {
-        boolean isAddedCorrectly = addPerformerResponses.stream()
-                .anyMatch(addPerformerResponse -> !addPerformerResponse.isAddedCorrectly());
+    private String retrieveToken(Attributes attributes) {
+        final String ATTR_NAME = "Token";
+        return attributes.getValue(ATTR_NAME);
+    }
+
+    private AddPerformerResponse merge(List<AddPerformerResponse> addPerformerResponses) {
         List<AddPerformerResponse.ValidationError> validationErrors = addPerformerResponses.stream()
                 .filter(Objects::nonNull)
                 .flatMap(addPerformerResponse -> addPerformerResponse.getValidationErrorList().stream()).collect(Collectors.toList());
-        return AddPerformerResponse.of(isAddedCorrectly, validationErrors);
+        return AddPerformerResponse.of(validationErrors);
     }
 
     private AddPerformerResponse transform(Validation<String, Boolean> validation) {
@@ -133,13 +148,13 @@ public class JarFileValidator {
         return AddPerformerResponse.of(validation.isValid(), validationErrors);
     }
 
-    private AddPerformerResponse transformSequence(Validation<Seq<String>, Boolean> validationSequence) {
+    private AddPerformerResponse transformSequence(Validation<Seq<String>, Boolean> validationSequence, Attributes attributes) {
         List<String> errors = validationSequence.isInvalid() ? validationSequence.getError().toJavaList() : Collections.emptyList();
         return AddPerformerResponse.of(
-                validationSequence.isValid(),
                 errors.stream()
                         .map(AddPerformerResponse.ValidationError::new)
-                        .collect(Collectors.toList())
+                        .collect(Collectors.toList()),
+                retrieveToken(attributes)
         );
     }
 }

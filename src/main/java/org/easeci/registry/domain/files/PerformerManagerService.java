@@ -13,6 +13,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Mono;
 
+import javax.transaction.Transactional;
 import java.time.LocalDateTime;
 import java.util.HashSet;
 import java.util.List;
@@ -21,6 +22,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 import static java.util.Objects.isNull;
+import static java.util.Objects.requireNonNull;
 
 @Slf4j
 @Service
@@ -38,9 +40,12 @@ public class PerformerManagerService {
         this.tokenService = tokenService;
     }
 
+    @Transactional
     public FileUploadResponse uploadProcess(FileUploadRequest request) {
         FileRepresentation fileRepresentation = prepare(request);
-        AddPerformerResponse addPerformerResponse = JarFileValidator.of(tokenService, performerRepository, new JarFileValidatorHelper(temporaryStorage, fileExtension)).check(fileRepresentation);
+        AddPerformerResponse addPerformerResponse = JarFileValidator.of(tokenService, performerRepository, new JarFileValidatorHelper(temporaryStorage, fileExtension))
+                                                                    .validationChain(fileRepresentation);
+        log.info("Validation result: {}", addPerformerResponse.toString());
         if (!addPerformerResponse.isAddedCorrectly()) {
             return FileUploadResponse.builder()
                     .isUploaded(false)
@@ -48,7 +53,8 @@ public class PerformerManagerService {
                     .validationErrorList(addPerformerResponse.getValidationErrorList())
                     .build();
         }
-        saveVersion(fileRepresentation);
+        Long performerVersionId = saveVersion(fileRepresentation);
+        tokenService.use(requireNonNull(addPerformerResponse.getToken()), performerVersionId);
         RegistryStatus persistStatus = fileInteractor.persist(fileRepresentation);
 
         return FileUploadResponse.builder()
@@ -76,28 +82,31 @@ public class PerformerManagerService {
                 .build();
     }
 
-    private void saveVersion(FileRepresentation fileRepresentation) {
+    private Long saveVersion(FileRepresentation fileRepresentation) {
         if (isNull(fileRepresentation)) {
             throw new RuntimeException("Cannot process when FileRepresentation is null");
         }
-        performerRepository.findByPerformerName(fileRepresentation.getMeta().getPerformerName())
-                .ifPresentOrElse(performerEntity -> {
-                            performerEntity.getPerformerVersions().add(prepare(fileRepresentation, performerEntity));
-                            performerRepository.save(performerEntity);
-                        },
-                        () -> {
-                            PerformerEntity savedEntity = performerRepository.save(PerformerEntity.builder()
-                                    .authorFullname(fileRepresentation.getMeta().getAuthorFullname())
-                                    .authorEmail(fileRepresentation.getMeta().getAuthorEmail())
-                                    .company(fileRepresentation.getMeta().getCompany())
-                                    .creationDate(fileRepresentation.getMeta().getCreationDate())
-                                    .performerName(fileRepresentation.getMeta().getPerformerName())
-                                    .build());
-                            Set<PerformerVersionEntity> versionEntities = new HashSet<>();
-                            versionEntities.add(prepare(fileRepresentation, savedEntity));
-                            savedEntity.setPerformerVersions(versionEntities);
-                            performerRepository.save(savedEntity);
-                        });
+        return performerRepository.findByPerformerName(fileRepresentation.getMeta().getPerformerName())
+                .map(performerEntity -> {
+                    performerEntity.getPerformerVersions().add(prepare(fileRepresentation, performerEntity));
+                    return performerRepository.save(performerEntity);
+                }).orElseGet(() -> {
+                    PerformerEntity savedEntity = performerRepository.save(PerformerEntity.builder()
+                            .authorFullname(fileRepresentation.getMeta().getAuthorFullname())
+                            .authorEmail(fileRepresentation.getMeta().getAuthorEmail())
+                            .company(fileRepresentation.getMeta().getCompany())
+                            .creationDate(fileRepresentation.getMeta().getCreationDate())
+                            .performerName(fileRepresentation.getMeta().getPerformerName())
+                            .build());
+                    Set<PerformerVersionEntity> versionEntities = new HashSet<>();
+                    versionEntities.add(prepare(fileRepresentation, savedEntity));
+                    savedEntity.setPerformerVersions(versionEntities);
+                    return performerRepository.save(savedEntity);
+                }).getPerformerVersions().stream()
+                .filter(performerVersionEntity -> performerVersionEntity.getPerformerVersion().equals(fileRepresentation.getMeta().getPerformerVersion()))
+                .findAny()
+                .orElseThrow()
+                .getVersionId();
     }
 
     private PerformerVersionEntity prepare(FileRepresentation fileRepresentation, PerformerEntity performerEntity) {

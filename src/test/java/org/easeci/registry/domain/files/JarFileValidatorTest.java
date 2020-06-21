@@ -34,6 +34,30 @@ class JarFileValidatorTest {
     }
 
     @Test
+    @DisplayName("Should pass validation when uploaded file has more than zero bytes")
+    void isUploadedFileNotEmptyPositiveTest() {
+        byte[] bytes = new byte[] {1, 5, 4};
+
+        Validation<String, Boolean> validation = jarFileValidator.isUploadedFileNotEmpty(bytes);
+
+        assertAll(() -> assertNotNull(validation),
+                () -> assertTrue(validation.isValid()),
+                () -> assertThrows(NoSuchElementException.class, validation::getError));
+    }
+
+    @Test
+    @DisplayName("Should not pass validation when uploaded file is empty")
+    void isUploadedFileNotEmptyNegativeTest() {
+        byte[] bytes = new byte[] {};
+
+        Validation<String, Boolean> validation = jarFileValidator.isUploadedFileNotEmpty(bytes);
+
+        assertAll(() -> assertNotNull(validation),
+                () -> assertFalse(validation.isValid()),
+                () -> assertEquals("No file detected in your request or file is malformed", validation.getError()));
+    }
+
+    @Test
     @DisplayName("Should not pass validation when Attributes.class is null")
     void isAttributesNullNegativeTest() {
         Attributes attributes = null;
@@ -89,30 +113,30 @@ class JarFileValidatorTest {
     }
 
     @Test
-    @DisplayName("Should pass validation when file not exists on passed path")
-    void isFileNotExistsOnTmpStoragePositiveTest() {
+    @DisplayName("Should pass validation when file exists on passed path")
+    void isFileExistsOnTmpStoragePositiveTest() throws IOException {
         final Path PATH = Paths.get("/tmp/test-file.txt");
+        Files.createFile(PATH);
 
-        Validation<String, Boolean> validation = jarFileValidator.isFileNotExistsOnTmpStorage(PATH);
+        Validation<String, Boolean> validation = jarFileValidator.isFileExistsOnTmpStorage(PATH);
 
         assertAll(() -> assertNotNull(validation),
                 () -> assertTrue(validation.isValid()),
                 () -> assertThrows(NoSuchElementException.class, validation::getError));
+
+        Files.deleteIfExists(PATH);
     }
 
     @Test
-    @DisplayName("Should not pass validation when file just exists on passed path")
-    void isFileNotExistsOnTmpStorageNegativeTest() throws IOException {
+    @DisplayName("Should not pass validation when file not exists on passed path")
+    void isFileExistsOnTmpStorageNegativeTest() throws IOException {
         final Path PATH = Paths.get("/tmp/test-file.txt");
-        Files.createFile(PATH);
 
-        Validation<String, Boolean> validation = jarFileValidator.isFileNotExistsOnTmpStorage(PATH);
+        Validation<String, Boolean> validation = jarFileValidator.isFileExistsOnTmpStorage(PATH);
 
         assertAll(() -> assertNotNull(validation),
                 () -> assertFalse(validation.isValid()),
                 () -> assertEquals("Temporary file for validation exists. Maybe you download same plugin twice and process not ends yet?", validation.getError()));
-
-        Files.deleteIfExists(PATH);
     }
 
     @Test
