@@ -1,0 +1,22 @@
+<!doctype html>
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Registration mail</title>
+</head>
+<body>
+    <h2><span th:text="${username}"></span> welcome in Ease CI Registry!</h2>
+    <p>We are so happy you are here.
+    <br>In order to finish registration process please click at link bellow:
+    <hr>
+    <a th:href="${link}">Activate my account</a>
+    <br>
+    <hr>
+    We wish you a easy and quick deployment,<br>
+    EaseCI team
+    </p>
+</body>
+</html>
