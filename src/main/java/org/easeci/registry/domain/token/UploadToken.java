@@ -17,6 +17,8 @@ public class UploadToken {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    private boolean reserved;
+    private String reservedBy;
     private boolean isInUse;
     private Date releaseDate;
     private Date useDate;

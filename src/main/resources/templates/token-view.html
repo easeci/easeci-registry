@@ -1,0 +1,29 @@
+<!doctype html>
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <link href="css/style.css" rel="stylesheet">
+    <link href="webjars/bootstrap/4.3.1/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css?family=Poppins&display=swap" rel="stylesheet">
+    <script src="webjars/bootstrap/4.3.1/js/bootstrap.min.js"></script>
+    <link rel="shortcut icon" type="image/png" th:src="@{../../images/favicon.ico}"/>
+    <title>Get token</title>
+</head>
+<body class="wrapper">
+    <header th:insert="fragments/menu-bar.html :: header"></header>
+    <div>
+        <form class="login-form" action="#" th:action="@{/token}" method="POST">
+            <input class="btn btn-info" type="submit" value="Grab token">
+        </form>
+        <div th:if="${requestedForToken == true}">
+            <p>Your token:
+                <span th:text="${token.getToken()}"></span>
+            </p>
+        </div>
+        <div th:if="${requestedForToken != true and noTokenFound == true}">
+            <p>No tokens available today! Come back tomorrow.</p>
+        </div>
+    </div>
+    <div class="footer" th:insert="fragments/footer.html :: footer"></div>
+</body>
+</html>
