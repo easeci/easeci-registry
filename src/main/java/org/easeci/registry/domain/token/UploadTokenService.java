@@ -5,6 +5,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
+import java.security.Principal;
 import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
@@ -43,6 +44,15 @@ public class UploadTokenService {
 
     public boolean isTokenAvailable(String token) {
         return !uploadTokenRepository.isTokenInUse(token);
+    }
+
+    public Optional<UploadTokenDto> getToken() {
+        return uploadTokenRepository.findOneToken();
+    }
+
+    public void reserveToken(Long tokenId, Principal principal) {
+        log.info("Token with id: {}, reserved by {}", tokenId, principal.getName());
+        uploadTokenRepository.reserveToken(tokenId, principal.getName());
     }
 
     private List<UploadToken> generateTokens(int amount) {
