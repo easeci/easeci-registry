@@ -3,6 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <link href="css/style.css" rel="stylesheet">
+    <link href="css/style-token.css" rel="stylesheet">
     <link href="webjars/bootstrap/4.3.1/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css?family=Poppins&display=swap" rel="stylesheet">
     <script src="webjars/bootstrap/4.3.1/js/bootstrap.min.js"></script>
@@ -13,14 +14,16 @@
     <header th:insert="fragments/menu-bar.html :: header"></header>
     <div>
         <form class="login-form" action="#" th:action="@{/token}" method="POST">
-            <input class="btn btn-info" type="submit" value="Grab token">
+            <h3>Receive upload token</h3>
+            <p>Click the button bellow in order to display token that is required for upload plugin to EaseCI registry server.</p>
+            <p>Token will be reserved for you, and when you'll attach it to MANIFEST.md file of your .jar, token will be associated with plugin file.</p>
+            <input th:if="${requestedForToken == false}" class="btn btn-info" type="submit" value="Grab token">
         </form>
-        <div th:if="${requestedForToken == true}">
-            <p>Your token:
-                <span th:text="${token.getToken()}"></span>
-            </p>
+        <div class="token-field" th:if="${requestedForToken == true}">
+            <p class="label">Your token:</p>
+            <p class="token-text-area" th:text="${token.getToken()}"></p>
         </div>
-        <div th:if="${requestedForToken != true and noTokenFound == true}">
+        <div class="token-field token-field-error" th:if="${requestedForToken != true and noTokenFound == true}">
             <p>No tokens available today! Come back tomorrow.</p>
         </div>
     </div>
