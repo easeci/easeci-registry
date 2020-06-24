@@ -1,0 +1,25 @@
+.token-field {
+    width: 50%;
+    margin: 5vh auto;
+    text-align: center;
+}
+
+.token-field-error {
+    color: #ff000091;
+}
+
+.label {
+    margin: 0;
+    font-size: 0.9rem;
+    color: #0000006b;
+}
+
+.token-text-area {
+    margin: 0;
+    padding: 5px;
+    border: 1px solid #00000036;
+}
+
+.login-form p {
+    text-align: justify;
+}
