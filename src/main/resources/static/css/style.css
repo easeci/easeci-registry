@@ -3,6 +3,7 @@
     margin: 0 auto;
     margin-bottom: 30px;
     font-family: 'Poppins', sans-serif;
+    background-color: #f8f8f8;
 }
 
 .menu-container {
@@ -54,6 +55,7 @@
 
 .description {
     line-height: 1.5;
+    margin-bottom: 30px;
 }
 
 .footer {
@@ -115,4 +117,45 @@
 .alert-center {
     margin-top: 4em;
     text-align: center;
+}
+
+.banner {
+    margin-top: 5vh;
+    color: #93d9f8;
+    letter-spacing: 3px;
+    font-family: 'Holtwood One SC', serif;
+}
+
+.banner h1 {
+    padding-top: 10px;
+    position: relative;
+}
+
+@keyframes left-slide-first {
+    from {left: -400px;}
+    to {left: 0;}
+}
+
+@keyframes left-slide-second {
+    from {left: -500px;}
+    to {left: 0;}
+}
+
+@keyframes left-slide-third {
+    from {left: -600px;}
+    to {left: 0;}
+}
+
+.banner h1:nth-child(1) {
+    animation: left-slide-first 1s ease-in;
+}
+
+.banner h1:nth-child(2) {
+    padding-left: 50px;
+    animation: left-slide-second 2s ease-in;
+}
+
+.banner h1:nth-child(3) {
+    padding-left: 100px;
+    animation: left-slide-third 3s ease-in;
 }
