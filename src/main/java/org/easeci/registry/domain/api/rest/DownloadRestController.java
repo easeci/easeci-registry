@@ -1,6 +1,7 @@
 package org.easeci.registry.domain.api.rest;
 
 import lombok.AllArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.easeci.registry.domain.api.dto.ErrorResponse;
 import org.easeci.registry.domain.files.ExtensionNotExistsException;
 import org.easeci.registry.domain.files.PerformerManagerService;
@@ -12,6 +13,7 @@ import reactor.core.publisher.Mono;
 
 import java.util.Optional;
 
+@Slf4j
 @ControllerAdvice
 @RestController
 @AllArgsConstructor
@@ -22,6 +24,7 @@ class DownloadRestController {
     @GetMapping(value = "/{name}/{version}", produces = MediaType.APPLICATION_OCTET_STREAM_VALUE)
     @ResponseStatus(HttpStatus.OK)
     Mono<byte[]> downloadPerformer(@PathVariable String name, @PathVariable String version) {
+        log.info("=> File download request, name={}, version={}", name, version);
         return performerManagerService.findFile(name, version);
     }
 
