@@ -27,6 +27,8 @@ interface PerformerRepository extends JpaRepository<PerformerEntity, Long> {
 
     Page<PerformerEntity> findAll(Pageable pageable);
 
+    Page<PerformerEntity> findAllByUploaderPrincipalName(String uploaderUsername, Pageable pageable);
+
     @Query("select new org.easeci.registry.domain.files.dto.PerformerVersionResponse(pve.versionId, pve.performerVersion, " +
             "pve.performerScriptBytes, pve.validated, pve.releaseDate, pve.documentationUrl) " +
             "from PerformerEntity e inner join PerformerVersionEntity pve " +
