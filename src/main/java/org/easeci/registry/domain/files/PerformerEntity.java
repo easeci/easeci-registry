@@ -18,6 +18,7 @@ class PerformerEntity {
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long performerId;
 
+    private String uploaderPrincipalName;
     private String authorFullname;
     private String authorEmail;
     private String company;

@@ -23,6 +23,8 @@ import reactor.core.publisher.Mono;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 import java.io.IOException;
+import java.security.Principal;
+import java.util.Objects;
 import java.util.Set;
 
 import static org.easeci.registry.domain.api.utils.PageUtils.transformPageNum;
@@ -87,11 +89,12 @@ class RegistryController {
     @PostMapping("/performer/upload")
     @ResponseStatus(HttpStatus.OK)
     String upload(@Valid @NotNull @ModelAttribute("request") FileUploadForm request,
-                  @Valid @NotNull @ModelAttribute("file") MultipartFile file, ModelMap model) throws IOException {
+                  @Valid @NotNull @ModelAttribute("file") MultipartFile file,
+                  ModelMap model, Principal principal) throws IOException {
         log.info("Received completed request with multipart file to register new plugin: {}", request.toString());
         FileUploadForm req = (FileUploadForm) model.getAttribute("request");
-        FileUploadRequest fileUploadRequest = prepare(file, req);
-        FileUploadResponse fileUploadResponse = performerManagerService.uploadProcess(fileUploadRequest);
+        FileUploadRequest fileUploadRequest = prepare(file, Objects.requireNonNull(req));
+        FileUploadResponse fileUploadResponse = performerManagerService.uploadProcess(fileUploadRequest, principal);
         model.addAttribute("isFileSaved", String.valueOf(fileUploadResponse.isUploaded()));
         model.addAttribute("isDataAdded", "true");
         model.addAttribute("performerName", req.getPerformerName());

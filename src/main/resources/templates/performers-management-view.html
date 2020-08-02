@@ -1,0 +1,33 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+</head>
+<body>
+<div class="performers-list-section">
+    <div class="performer-cell">
+        <div class="performer-info">
+            <div th:if="${page.content.size()} == 0">
+                <p class="error-text">There is no performers yet.</p>
+            </div>
+            <table class="performer-info-table">
+                <tbody>
+                <tr th:each="performer : ${page.content}">
+                    <td style="width: 200px" th:text="${{performer.authorFullname}}">Performer name:</td>
+                    <td style="width: 200px; font-weight: bold" th:text="${{performer.performerName}}"></td>
+                    <td style="width: 110px;">
+                        <a class="btn btn-outline-info" th:href="@{'/performers/' + ${performer.performerName}}">Show</a>
+                        <img class="box-icon" th:src="@{images/box.svg}" data-toggle="tooltip" data-placement="top" th:title="'Versions amount: ' + ${performer.performerVersions.size()}">
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+</body>
+</html>

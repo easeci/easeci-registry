@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.security.Principal;
 
 @RestController
 @AllArgsConstructor
@@ -23,7 +24,8 @@ class UploadRestController {
                                        @RequestHeader("author-email") String authorEmail,
                                        @RequestHeader("author-company") String company,
                                        @RequestHeader("performer-name") String performerName,
-                                       @RequestHeader("performer-version") String performerVersion) throws IOException {
+                                       @RequestHeader("performer-version") String performerVersion,
+                                       Principal principal) throws IOException {
 
         return filesFacadeService.uploadProcess(FileUploadRequest.builder()
                         .authorFullname(authorFullname)
@@ -32,6 +34,6 @@ class UploadRestController {
                         .performerName(performerName)
                         .performerVersion(performerVersion)
                         .multipartFile(multipartFile.getBytes())
-                        .build());
+                        .build(), principal);
     }
 }

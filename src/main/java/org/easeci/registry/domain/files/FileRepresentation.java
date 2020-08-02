@@ -20,6 +20,7 @@ public class FileRepresentation {
     @NoArgsConstructor
     @AllArgsConstructor
     public static class FileMeta {
+        private String uploaderPrincipalName;
         private String authorFullname;
         private String authorEmail;
         private String company;

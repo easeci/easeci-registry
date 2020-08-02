@@ -14,11 +14,10 @@ import org.springframework.stereotype.Service;
 import reactor.core.publisher.Mono;
 
 import javax.transaction.Transactional;
+import java.security.Principal;
 import java.time.LocalDateTime;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Objects;
-import java.util.Set;
+import java.util.*;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import static java.util.Objects.isNull;
@@ -41,8 +40,8 @@ public class PerformerManagerService {
     }
 
     @Transactional
-    public FileUploadResponse uploadProcess(FileUploadRequest request) {
-        FileRepresentation fileRepresentation = prepare(request);
+    public FileUploadResponse uploadProcess(FileUploadRequest request, Principal principal) {
+        FileRepresentation fileRepresentation = prepare(request, principal);
         AddPerformerResponse addPerformerResponse = JarFileValidator.of(tokenService, performerRepository, new JarFileValidatorHelper(temporaryStorage, fileExtension))
                                                                     .validationChain(fileRepresentation);
         log.info("Validation result: {}", addPerformerResponse.toString());
@@ -65,10 +64,11 @@ public class PerformerManagerService {
                 .build();
     }
 
-    private FileRepresentation prepare(FileUploadRequest request) {
+    private FileRepresentation prepare(FileUploadRequest request, Principal principal) {
         return FileRepresentation.builder()
                 .status(RegistryStatus.JUST_PROCESSING)
                 .meta(FileRepresentation.FileMeta.builder()
+                        .uploaderPrincipalName(principal.getName())
                         .authorFullname(request.getAuthorFullname())
                         .authorEmail(request.getAuthorEmail())
                         .company(request.getCompany())
@@ -92,6 +92,7 @@ public class PerformerManagerService {
                     return performerRepository.save(performerEntity);
                 }).orElseGet(() -> {
                     PerformerEntity savedEntity = performerRepository.save(PerformerEntity.builder()
+                            .uploaderPrincipalName(fileRepresentation.getMeta().getUploaderPrincipalName())
                             .authorFullname(fileRepresentation.getMeta().getAuthorFullname())
                             .authorEmail(fileRepresentation.getMeta().getAuthorEmail())
                             .company(fileRepresentation.getMeta().getCompany())
@@ -120,8 +121,16 @@ public class PerformerManagerService {
     }
 
     public Mono<Page<PerformerResponse>> getPerformerPage(int page, int size) {
-        return Mono.just(PageRequest.of(page, size))
-                .map(pageRequest -> performerRepository.findAll(pageRequest))
+        return findAndMap(performerRepository -> performerRepository.findAll(PageRequest.of(page, size)));
+    }
+
+    public Mono<Page<PerformerResponse>> getPerformerPage(Principal principal, int page, int size) {
+        return findAndMap(performerRepository -> performerRepository.findAllByUploaderPrincipalName(principal.getName(), PageRequest.of(page, size)));
+    }
+
+    private Mono<Page<PerformerResponse>> findAndMap(Function<PerformerRepository, Page<PerformerEntity>> fetchFunction) {
+        return Mono.just(fetchFunction)
+                .map(fun -> fun.apply(this.performerRepository))
                 .map(performerEntities -> performerEntities.map(performerEntity -> PerformerResponse.builder()
                         .performerId(performerEntity.getPerformerId())
                         .authorFullname(performerEntity.getAuthorFullname())
