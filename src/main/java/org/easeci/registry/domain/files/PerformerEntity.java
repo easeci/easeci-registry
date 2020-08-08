@@ -29,7 +29,7 @@ class PerformerEntity {
     private String description;
 
     @Setter
-    @OneToMany(fetch = FetchType.EAGER, mappedBy = "performer", cascade = CascadeType.ALL)
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "performer", cascade = CascadeType.ALL)
     private Set<PerformerVersionEntity> performerVersions;
 }
 

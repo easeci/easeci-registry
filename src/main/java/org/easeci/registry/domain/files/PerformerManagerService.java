@@ -4,6 +4,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.easeci.registry.domain.api.dto.FileUploadRequest;
 import org.easeci.registry.domain.api.dto.FileUploadResponse;
 import org.easeci.registry.domain.files.dto.AddPerformerResponse;
+import org.easeci.registry.domain.files.dto.PerformerDetailsResponse;
 import org.easeci.registry.domain.files.dto.PerformerResponse;
 import org.easeci.registry.domain.files.dto.PerformerVersionResponse;
 import org.easeci.registry.domain.token.UploadTokenService;
@@ -22,6 +23,7 @@ import java.util.stream.Collectors;
 
 import static java.util.Objects.isNull;
 import static java.util.Objects.requireNonNull;
+import static org.easeci.registry.domain.files.RegistryStatus.*;
 
 @Slf4j
 @Service
@@ -30,8 +32,10 @@ public class PerformerManagerService {
     private PerformerRepository performerRepository;
     private UploadTokenService tokenService;
 
-    @Value("${tmp.dir}") private String temporaryStorage;
-    @Value("${file.extension}") private String fileExtension;
+    @Value("${tmp.dir}")
+    private String temporaryStorage;
+    @Value("${file.extension}")
+    private String fileExtension;
 
     public PerformerManagerService(FileInteractor fileInteractor, PerformerRepository performerRepository, UploadTokenService tokenService) {
         this.fileInteractor = fileInteractor;
@@ -43,7 +47,7 @@ public class PerformerManagerService {
     public FileUploadResponse uploadProcess(FileUploadRequest request, Principal principal) {
         FileRepresentation fileRepresentation = prepare(request, principal);
         AddPerformerResponse addPerformerResponse = JarFileValidator.of(tokenService, performerRepository, new JarFileValidatorHelper(temporaryStorage, fileExtension))
-                                                                    .validationChain(fileRepresentation);
+                .validationChain(fileRepresentation);
         log.info("Validation result: {}", addPerformerResponse.toString());
         if (!addPerformerResponse.isAddedCorrectly()) {
             return FileUploadResponse.builder()
@@ -154,7 +158,7 @@ public class PerformerManagerService {
 
     public Mono<Set<PerformerVersionResponse>> getAllVersionsByName(String performerName) {
         return Mono.just(performerName)
-            .map(name -> performerRepository.findAllVersionByName(performerName));
+                .map(name -> performerRepository.findAllVersionByName(performerName));
     }
 
     public void saveDescription(String performerName, String description) {
@@ -170,5 +174,62 @@ public class PerformerManagerService {
                 .filter(Objects::nonNull)
                 .map(FileRepresentation::getPayload)
                 .onErrorMap(throwable -> new ExtensionNotExistsException(performerName, performerVersion));
+    }
+
+    public Mono<PerformerDetailsResponse> findDetails(String name, String version) {
+        return Mono.just(performerRepository.findByPerformerName(name))
+                .map(Optional::orElseThrow)
+                .doOnNext(performerEntity -> performerEntity.setPerformerVersions(
+                        performerEntity.getPerformerVersions()
+                                .stream()
+                                .filter(versionEntity -> versionEntity.getPerformerVersion().equals(version))
+                                .collect(Collectors.toSet())))
+                .map(this::map)
+                .onErrorResume(throwable -> performerNotFound())
+                .switchIfEmpty(performerNotFound());
+    }
+
+    private PerformerDetailsResponse map(PerformerEntity performerEntity) {
+        final RegistryStatus STATUS = FOUND;
+
+        if (performerEntity.getPerformerVersions().size() > 1) {
+            return PerformerDetailsResponse.builder()
+                    .status(PLUGIN_MORE_THAN_ONE_RESULTS)
+                    .message(PLUGIN_MORE_THAN_ONE_RESULTS.getValidationError().getMessage())
+                    .build();
+        }
+
+        PerformerVersionEntity versionEntity = performerEntity.getPerformerVersions().stream()
+                .findFirst()
+                .orElseThrow();
+
+        return PerformerDetailsResponse.builder()
+                .status(STATUS)
+                .message(STATUS.getValidationError().getMessage())
+                .performerId(performerEntity.getPerformerId())
+                .authorFullname(performerEntity.getAuthorFullname())
+                .authorEmail(performerEntity.getAuthorEmail())
+                .company(performerEntity.getCompany())
+                .creationDate(performerEntity.getCreationDate())
+                .performerName(performerEntity.getPerformerName())
+                .description(performerEntity.getDescription())
+                .isNewerVersionAvailable(false) // todo
+                .performerVersions(Set.of(PerformerVersionResponse.builder()
+                        .versionId(versionEntity.getVersionId())
+                        .performerVersion(versionEntity.getPerformerVersion())
+                        .performerScriptBytes(versionEntity.getPerformerScriptBytes())
+                        .validated(versionEntity.getValidated())
+                        .releaseDate(versionEntity.getReleaseDate())
+                        .documentationUrl(versionEntity.getDocumentationUrl())
+                        .build()))
+                .build();
+    }
+
+    private Mono<PerformerDetailsResponse> performerNotFound() {
+        final RegistryStatus STATUS = PLUGIN_NOT_FOUND;
+        return Mono.just(PerformerDetailsResponse.builder()
+                .status(STATUS)
+                .message(STATUS.getValidationError().getMessage())
+                .build());
     }
 }
