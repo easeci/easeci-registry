@@ -9,6 +9,18 @@ public enum RegistryStatus {
             return new AddPerformerResponse.ValidationError("Cannot find file in specified path");
         }
     },
+    PLUGIN_NOT_FOUND {
+        @Override
+        public AddPerformerResponse.ValidationError getValidationError() {
+            return new AddPerformerResponse.ValidationError("Cannot find file in specified path");
+        }
+    },
+    PLUGIN_MORE_THAN_ONE_RESULTS {
+        @Override
+        public AddPerformerResponse.ValidationError getValidationError() {
+            return new AddPerformerResponse.ValidationError("Cannot find one plugin because more than one the same versions exists");
+        }
+    },
     INVALID_REJECTED {
         @Override
         public AddPerformerResponse.ValidationError getValidationError() {
