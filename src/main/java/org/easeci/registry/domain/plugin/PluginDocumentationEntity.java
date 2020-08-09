@@ -6,8 +6,8 @@ import javax.persistence.*;
 
 @Data
 @Entity
-@Table("plugin_doc")
-public class PluginDocumentation {
+@Table(name = "plugin_doc")
+public class PluginDocumentationEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

@@ -8,6 +8,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 import reactor.core.publisher.Mono;
 
+import javax.validation.constraints.NotNull;
+
 @Slf4j
 @RestController
 @AllArgsConstructor
@@ -17,7 +19,7 @@ class PluginDetailsRestController {
 
     @GetMapping(value = "/{name}/{version}")
     @ResponseStatus(HttpStatus.OK)
-    Mono<PerformerDetailsResponse> downloadPerformer(@PathVariable String name, @PathVariable String version) {
+    Mono<PerformerDetailsResponse> downloadPerformer(@PathVariable @NotNull String name, @PathVariable @NotNull String version) {
         log.info("=> Get plugin details request, name={}, version={}", name, version);
         return performerManagerService.findDetails(name, version);
     }
