@@ -3,10 +3,7 @@ package org.easeci.registry.domain.files;
 import lombok.extern.slf4j.Slf4j;
 import org.easeci.registry.domain.api.dto.FileUploadRequest;
 import org.easeci.registry.domain.api.dto.FileUploadResponse;
-import org.easeci.registry.domain.files.dto.AddPerformerResponse;
-import org.easeci.registry.domain.files.dto.PerformerDetailsResponse;
-import org.easeci.registry.domain.files.dto.PerformerResponse;
-import org.easeci.registry.domain.files.dto.PerformerVersionResponse;
+import org.easeci.registry.domain.files.dto.*;
 import org.easeci.registry.domain.token.UploadTokenService;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
@@ -30,6 +27,7 @@ import static org.easeci.registry.domain.files.RegistryStatus.*;
 public class PerformerManagerService {
     private FileInteractor fileInteractor;
     private PerformerRepository performerRepository;
+    private PerformerVersionRepository performerVersionRepository;
     private UploadTokenService tokenService;
 
     @Value("${tmp.dir}")
@@ -37,9 +35,11 @@ public class PerformerManagerService {
     @Value("${file.extension}")
     private String fileExtension;
 
-    public PerformerManagerService(FileInteractor fileInteractor, PerformerRepository performerRepository, UploadTokenService tokenService) {
+    public PerformerManagerService(FileInteractor fileInteractor, PerformerRepository performerRepository,
+                                   PerformerVersionRepository performerVersionRepository, UploadTokenService tokenService) {
         this.fileInteractor = fileInteractor;
         this.performerRepository = performerRepository;
+        this.performerVersionRepository = performerVersionRepository;
         this.tokenService = tokenService;
     }
 
@@ -203,6 +203,7 @@ public class PerformerManagerService {
                 .findFirst()
                 .orElseThrow();
 
+        List<PerformerVersionBasic> newerVersions = this.findNewerVersions(performerEntity.getPerformerName(), versionEntity.getPerformerVersion());
         return PerformerDetailsResponse.builder()
                 .status(STATUS)
                 .message(STATUS.getValidationError().getMessage())
@@ -213,7 +214,8 @@ public class PerformerManagerService {
                 .creationDate(performerEntity.getCreationDate())
                 .performerName(performerEntity.getPerformerName())
                 .description(performerEntity.getDescription())
-                .isNewerVersionAvailable(false) // todo
+                .newerPerformerVersions(newerVersions)
+                .isNewerVersionAvailable(!newerVersions.isEmpty())
                 .performerVersions(Set.of(PerformerVersionResponse.builder()
                         .versionId(versionEntity.getVersionId())
                         .performerVersion(versionEntity.getPerformerVersion())
@@ -231,5 +233,39 @@ public class PerformerManagerService {
                 .status(STATUS)
                 .message(STATUS.getValidationError().getMessage())
                 .build());
+    }
+
+    public boolean hasPluginNewestVersion(String pluginName, String pluginVersion) {
+        List<PerformerVersionBasic> allByPerformerName = performerVersionRepository.findAllByPerformerName(pluginName);
+        if (allByPerformerName.isEmpty()) {
+            return false;
+        }
+        allByPerformerName.sort(Comparator.comparingLong(PerformerVersionBasic::getVersionId));
+        for (PerformerVersionBasic v : allByPerformerName) {
+            if (v.getPerformerVersion().equals(pluginVersion)) {
+                int index = allByPerformerName.indexOf(v);
+                if (index == allByPerformerName.size() - 1) {
+                    return false;
+                }
+            }
+        }
+        return true;
+    }
+
+    public List<PerformerVersionBasic> findNewerVersions(String pluginName, String pluginVersion) {
+        List<PerformerVersionBasic> allByPerformerName = performerVersionRepository.findAllByPerformerName(pluginName);
+        allByPerformerName.sort(Comparator.comparingLong(PerformerVersionBasic::getVersionId));
+        boolean pluginVersionExists = false;
+        List<PerformerVersionBasic> newestVersions = new ArrayList<>(1);
+        for (PerformerVersionBasic v : allByPerformerName) {
+            if (v.getPerformerVersion().equals(pluginVersion)) {
+                pluginVersionExists = true;
+                int index = allByPerformerName.indexOf(v);
+                for (int i = index + 1; i < allByPerformerName.size(); i++) {
+                    newestVersions.add(allByPerformerName.get(i));
+                }
+            }
+        }
+        return (newestVersions.isEmpty() && !pluginVersionExists) ? allByPerformerName : newestVersions;
     }
 }
