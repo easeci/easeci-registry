@@ -12,7 +12,7 @@ public enum RegistryStatus {
     PLUGIN_NOT_FOUND {
         @Override
         public AddPerformerResponse.ValidationError getValidationError() {
-            return new AddPerformerResponse.ValidationError("Cannot find file in specified path");
+            return new AddPerformerResponse.ValidationError("Cannot find plugin");
         }
     },
     PLUGIN_MORE_THAN_ONE_RESULTS {
@@ -76,7 +76,7 @@ public enum RegistryStatus {
         }
     },
 
-//  Statuses for user registration
+    //  Statuses for user registration
     USER_CREATED {
         @Override
         public AddPerformerResponse.ValidationError getValidationError() {
@@ -105,6 +105,32 @@ public enum RegistryStatus {
         @Override
         public AddPerformerResponse.ValidationError getValidationError() {
             return new AddPerformerResponse.ValidationError("Server error occurred while registration process");
+        }
+    },
+
+    //    plugin documentation
+    DOCUMENTATION_JUST_EXISTS {
+        @Override
+        public AddPerformerResponse.ValidationError getValidationError() {
+            return new AddPerformerResponse.ValidationError("Cannot add documentation because it just exist");
+        }
+    },
+    DOCUMENTATION_CREATED {
+        @Override
+        public AddPerformerResponse.ValidationError getValidationError() {
+            return new AddPerformerResponse.ValidationError("Documentation for plugin version added correctly");
+        }
+    },
+    DOCUMENTATION_NOT_CREATED {
+        @Override
+        public AddPerformerResponse.ValidationError getValidationError() {
+            return new AddPerformerResponse.ValidationError("Documentation for plugin version not created for unrecognized reason");
+        }
+    },
+    DOCUMENTATION_UPDATED {
+        @Override
+        public AddPerformerResponse.ValidationError getValidationError() {
+            return new AddPerformerResponse.ValidationError("Documentation for plugin version updated correctly");
         }
     };
 
