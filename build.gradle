@@ -37,6 +37,7 @@ dependencies {
 	testImplementation 'io.projectreactor:reactor-test'
 	testCompile group: 'com.h2database', name: 'h2', version: '1.4.200'
 
+	compile group: 'org.webjars.npm', name: 'ace-builds', version: '1.4.11'
 	compile group: 'org.webjars', name: 'bootstrap', version: '4.3.1'
 }
 

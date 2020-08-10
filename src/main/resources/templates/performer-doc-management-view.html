@@ -1,0 +1,47 @@
+<!doctype html>
+<html lang="en" xmlns:th="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+    <link href="../../../webjars/ace-builds/1.4.11/src/ace.js" rel="text/javascript">
+    <style type="text/css" media="screen">
+        #editor {
+            position: absolute;
+            top: 0;
+            right: 0;
+            bottom: 0;
+            left: 0;
+        }
+    </style>
+</head>
+<body>
+    <div>
+<!--        based on this status we knows is plugin exists etc -->
+        <p th:text="${doc.status}"></p>
+        <div>
+            <form action="#" th:action="@{/management/plugins/documentation}" th:object="${request}"  method="POST">
+                <input type="hidden" th:field="${request.pluginName}">
+                <input type="hidden" th:field="${request.pluginVersion}">
+                <label>
+                    <textarea th:field="${request.documentationText}"></textarea>
+                </label>
+                <input class="btn btn-info" type="submit" value="Save documentation">
+            </form>
+        </div>
+<!--        response status after adding/editing documentation -->
+        <p th:text="${status}"></p>
+
+        <div id="editor" th:field="${request.documentationText}" style="width: 50%;height: 50%;margin: 100px;"></div>
+
+        <script src="../../../webjars/ace-builds/1.4.11/src/ace.js" type="text/javascript" charset="utf-8"></script>
+        <script>
+            var editor = ace.edit("editor");
+            editor.setTheme("ace/theme/nord-dark");
+            editor.session.setMode("ace/mode/html");
+        </script>
+    </div>
+</body>
+</html>

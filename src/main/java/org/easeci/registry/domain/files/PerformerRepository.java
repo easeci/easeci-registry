@@ -11,7 +11,7 @@ import javax.transaction.Transactional;
 import java.util.Optional;
 import java.util.Set;
 
-interface PerformerRepository extends JpaRepository<PerformerEntity, Long> {
+public interface PerformerRepository extends JpaRepository<PerformerEntity, Long> {
 
     Optional<PerformerEntity> findByPerformerName(String performerName);
 
@@ -43,4 +43,6 @@ interface PerformerRepository extends JpaRepository<PerformerEntity, Long> {
     @Transactional
     @Query(value = "update performer set description = :description where performer_name = :performerName", nativeQuery = true)
     void updateDescription(String performerName, String description);
+
+    boolean existsByUploaderPrincipalNameAndPerformerName(String principalName, String pluginName);
 }
