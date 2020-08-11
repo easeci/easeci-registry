@@ -4,6 +4,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.easeci.registry.domain.api.dto.FileUploadRequest;
 import org.easeci.registry.domain.api.dto.FileUploadResponse;
 import org.easeci.registry.domain.files.dto.*;
+import org.easeci.registry.domain.plugin.PluginDocumentationRepository;
+import org.easeci.registry.domain.plugin.dto.DocumentationDto;
 import org.easeci.registry.domain.token.UploadTokenService;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
@@ -28,6 +30,7 @@ public class PerformerManagerService {
     private FileInteractor fileInteractor;
     private PerformerRepository performerRepository;
     private PerformerVersionRepository performerVersionRepository;
+    private PluginDocumentationRepository pluginDocumentationRepository;
     private UploadTokenService tokenService;
 
     @Value("${tmp.dir}")
@@ -36,10 +39,12 @@ public class PerformerManagerService {
     private String fileExtension;
 
     public PerformerManagerService(FileInteractor fileInteractor, PerformerRepository performerRepository,
-                                   PerformerVersionRepository performerVersionRepository, UploadTokenService tokenService) {
+                                   PerformerVersionRepository performerVersionRepository, PluginDocumentationRepository pluginDocumentationRepository,
+                                   UploadTokenService tokenService) {
         this.fileInteractor = fileInteractor;
         this.performerRepository = performerRepository;
         this.performerVersionRepository = performerVersionRepository;
+        this.pluginDocumentationRepository = pluginDocumentationRepository;
         this.tokenService = tokenService;
     }
 
@@ -176,7 +181,7 @@ public class PerformerManagerService {
                 .onErrorMap(throwable -> new ExtensionNotExistsException(performerName, performerVersion));
     }
 
-    public Mono<PerformerDetailsResponse> findDetails(String name, String version) {
+    public Mono<PerformerDetailsResponse> findDetails(String name, String version, boolean fetchDocumentation) {
         return Mono.just(performerRepository.findByPerformerName(name))
                 .map(Optional::orElseThrow)
                 .doOnNext(performerEntity -> performerEntity.setPerformerVersions(
@@ -185,7 +190,18 @@ public class PerformerManagerService {
                                 .filter(versionEntity -> versionEntity.getPerformerVersion().equals(version))
                                 .collect(Collectors.toSet())))
                 .map(this::map)
-                .onErrorResume(throwable -> performerNotFound())
+                .doOnNext(performerDetailsResponse -> {
+                    if (fetchDocumentation)
+                        performerDetailsResponse.setDocumentationText(
+                                this.pluginDocumentationRepository.findPluginDocumentationText(name, version)
+                                                                  .map(DocumentationDto::getDocumentationTextAsBytes)
+                                                                  .orElse(new byte[] {})
+                        );
+                })
+                .onErrorResume(throwable -> {
+                    throwable.printStackTrace();
+                    return performerNotFound();
+                })
                 .switchIfEmpty(performerNotFound());
     }
 

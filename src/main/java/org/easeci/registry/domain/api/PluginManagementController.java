@@ -13,7 +13,9 @@ import org.springframework.web.bind.annotation.*;
 import javax.validation.Valid;
 import java.security.Principal;
 
+import static java.util.Objects.isNull;
 import static org.easeci.registry.domain.files.RegistryStatus.DOCUMENTATION_JUST_EXISTS;
+import static org.easeci.registry.domain.plugin.Utils.docTip;
 
 @Slf4j
 @Controller
@@ -40,7 +42,11 @@ class PluginManagementController {
         pluginDocumentationService.findDocumentation(principal, pluginName, pluginVersion)
                 .subscribe(pluginDocumentationResponse -> {
                     model.addAttribute("doc", pluginDocumentationResponse);
-                    model.addAttribute("request", new PluginDocumentationRequest(pluginName, pluginVersion, pluginDocumentationResponse.getDocumentationText()));
+                    model.addAttribute("request", new PluginDocumentationRequest(
+                            pluginName,
+                            pluginVersion,
+                            toString(pluginDocumentationResponse.getDocumentationText()))
+                    );
                 });
         return "performer-doc-management-view";
     }
@@ -68,8 +74,17 @@ class PluginManagementController {
         pluginDocumentationService.findDocumentation(principal, request.getPluginName(), request.getPluginVersion())
                 .subscribe(pluginDocumentationResponse -> {
                     model.addAttribute("doc", pluginDocumentationResponse);
-                    model.addAttribute("request", new PluginDocumentationRequest(request.getPluginName(), request.getPluginVersion(), pluginDocumentationResponse.getDocumentationText()));
+                    model.addAttribute("request", new PluginDocumentationRequest(
+                            request.getPluginName(),
+                            request.getPluginVersion(),
+                            toString(pluginDocumentationResponse.getDocumentationText()))
+                    );
                 });
+    }
+
+    private String toString(byte[] encodedDoc) {
+        if (isNull(encodedDoc) || encodedDoc.length == 0) return docTip();
+        return new String(encodedDoc);
     }
 
 }
