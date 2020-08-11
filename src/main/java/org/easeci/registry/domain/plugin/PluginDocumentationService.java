@@ -26,7 +26,7 @@ public class PluginDocumentationService {
                         .lastModifiedBy(entity.getLastModifiedBy())
                         .pluginName(entity.getPluginName())
                         .pluginVersion(entity.getPluginVersion())
-                        .documentationText(entity.getDocumentationText())
+                        .documentationText(entity.getDocumentationTextBytes())
                         .build()))
                 .orElseGet(() -> Mono.just(PluginDocumentationResponse.builder()
                         .status(NOT_FOUND)
@@ -47,7 +47,7 @@ public class PluginDocumentationService {
                 .lastModifiedBy(principal.getName())
                 .pluginName(request.getPluginName())
                 .pluginVersion(request.getPluginVersion())
-                .documentationText(request.getDocumentationText())
+                .documentationTextBytes(toEncodedBytes(request.getDocumentationText()))
                 .build());
         return nonNull(savedEntity.getId()) && savedEntity.getId() != 0 ? Mono.just(DOCUMENTATION_CREATED) : Mono.just(DOCUMENTATION_NOT_CREATED);
     }
@@ -57,9 +57,13 @@ public class PluginDocumentationService {
                 principal.getName(), request.getPluginName(), request.getPluginVersion())
                 .map(pluginDocumentationEntity -> {
                     pluginDocumentationEntity.setLastModifiedBy(principal.getName());
-                    pluginDocumentationEntity.setDocumentationText(request.getDocumentationText());
+                    pluginDocumentationEntity.setDocumentationTextBytes(toEncodedBytes(request.getDocumentationText()));
                     return pluginDocumentationRepository.save(pluginDocumentationEntity);
                 }).isPresent();
         return isEditedCorrectly ? Mono.just(DOCUMENTATION_UPDATED) : Mono.just(PLUGIN_NOT_FOUND);
+    }
+
+    private byte[] toEncodedBytes(String text) {
+        return text.getBytes();
     }
 }

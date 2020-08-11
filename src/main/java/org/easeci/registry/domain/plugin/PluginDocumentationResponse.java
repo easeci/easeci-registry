@@ -15,5 +15,5 @@ public class PluginDocumentationResponse {
     private String lastModifiedBy;
     private String pluginName;
     private String pluginVersion;
-    private String documentationText;
+    private byte[] documentationText;
 }

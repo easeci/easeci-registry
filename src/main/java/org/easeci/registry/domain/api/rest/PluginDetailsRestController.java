@@ -19,8 +19,9 @@ class PluginDetailsRestController {
 
     @GetMapping(value = "/{name}/{version}")
     @ResponseStatus(HttpStatus.OK)
-    Mono<PerformerDetailsResponse> downloadPerformer(@PathVariable @NotNull String name, @PathVariable @NotNull String version) {
+    Mono<PerformerDetailsResponse> getPerformerDetails(@RequestParam(name = "documentation", required = false, defaultValue = "false") boolean fetchDocumentation,
+                                                     @PathVariable @NotNull String name, @PathVariable @NotNull String version) {
         log.info("=> Get plugin details request, name={}, version={}", name, version);
-        return performerManagerService.findDetails(name, version);
+        return performerManagerService.findDetails(name, version, fetchDocumentation);
     }
 }

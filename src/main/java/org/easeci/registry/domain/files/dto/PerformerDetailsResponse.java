@@ -3,6 +3,7 @@ package org.easeci.registry.domain.files.dto;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
+import lombok.Setter;
 import lombok.experimental.SuperBuilder;
 import org.easeci.registry.domain.api.dto.BaseResponse;
 
@@ -23,7 +24,7 @@ public class PerformerDetailsResponse extends BaseResponse {
     private String performerName;
     private String description;
     private boolean isNewerVersionAvailable;
-//    TODO add here documentation from PluginDocumentationEntity.class
+    @Setter private byte[] documentationText;
     private List<PerformerVersionBasic> newerPerformerVersions;
     private Set<PerformerVersionResponse> performerVersions;
 }

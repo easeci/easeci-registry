@@ -9,7 +9,7 @@ import javax.persistence.*;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@ToString(exclude = "documentationText")
+@ToString(exclude = "documentationTextBytes")
 @Table(name = "plugin_doc")
 public class PluginDocumentationEntity {
 
@@ -21,6 +21,5 @@ public class PluginDocumentationEntity {
     private String pluginName;
     private String pluginVersion;
 
-    @Column(columnDefinition = "TEXT")
-    private String documentationText;
+    private byte[] documentationTextBytes;
 }
