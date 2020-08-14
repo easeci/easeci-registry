@@ -284,4 +284,20 @@ public class PerformerManagerService {
         }
         return (newestVersions.isEmpty() && !pluginVersionExists) ? allByPerformerName : newestVersions;
     }
+
+    public Mono<PerformerUpdateCheckResponse> findUpdates(String name, String version) {
+        List<PerformerVersionBasic> newerVersions = findNewerVersions(name, version);
+        PerformerUpdateCheckResponse updateCheck = PerformerUpdateCheckResponse.builder()
+                .newerPerformerVersions(newerVersions)
+                .isNewerVersionAvailable(!newerVersions.isEmpty())
+                .status(FOUND)
+                .message(FOUND.getValidationError().getMessage())
+                .build();
+
+        return Mono.just(updateCheck)
+                .onErrorReturn(PerformerUpdateCheckResponse.builder()
+                        .status(NOT_FOUND)
+                        .message(NOT_FOUND.getValidationError().getMessage())
+                        .build());
+    }
 }
