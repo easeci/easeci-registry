@@ -45,6 +45,18 @@ pre {
     color: #e59a05;
 }
 
+.directive {
+    color: #2f54b8;
+}
+
+.operator {
+    color: #9e1323;
+}
+
+.cursive {
+    font-style: italic;
+}
+
 .var-text {
     background-color: #0000000a;
     color: #e59a05;
@@ -54,4 +66,29 @@ pre {
     font-size: 1.1em;
     letter-spacing: 1px;
     text-indent: 1em;
+}
+
+.pointer {
+    display: inline-block;
+    line-height: 20px;
+    border-radius: 50%;
+    width: 19px;
+    height: 19px;
+    color: white;
+    background-color: black;
+    font-size: 13px;
+    font-weight: bold;
+    text-align: center;
+}
+
+.near {
+    margin-left: 30px;
+}
+
+.medium {
+    margin-left: 60px;
+}
+
+.far {
+    margin-left: 90px;
 }
