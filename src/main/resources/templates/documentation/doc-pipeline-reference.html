@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+    <div>
+        <p>Here you can find some </p>
+        <p class="point">Pipeline syntax explanation</p>
+<pre>
+<span class="key-word">pipeline</span>:<span class="pointer medium">1</span>
+  <span class="key-word">executor</span>: auto<span class="pointer medium">2</span>
+  <span class="key-word">variables</span>:<span class="pointer near">3</span>
+    <span class="cursive">_repo_address</span> = https://github.com/easeci/easeci-core-java<span class="pointer near">4</span>
+    <span class="cursive">_repo_clone_target</span> = /var/sources/easeci
+    <span class="cursive">_artifactory_url</span> = https://easeci-artifactory.io
+    <span class="cursive">_dev_hosts</span> = [<span class="pointer near">5</span>
+        '127.0.0.1',
+        '127.0.0.2',
+        '127.0.0.3',
+        '127.0.0.4',
+        '127.0.0.5',
+        '127.0.0.6'
+    ]
+  <span class="key-word">stage</span> 'Prepare building environment':<span class="pointer medium">6</span>
+    <span class="directive">$ssh</span> mkdir -p {_repo_clone_target}<span class="pointer near">7</span>
+
+  <span class="key-word">stage</span> 'Preparation of project building':
+    <span class="directive">$git</span> clone {_repo_address}
+
+  <span class="key-word">stage</span> 'Unit tests':
+    <span class="directive">$mvn</span> test
+    <span class="directive">$bash</span> cp -r target/test-result/* /tmp/logs/
+
+  <span class="key-word">stage</span> 'Building project':
+    <span class="directive">$mvn</span> install
+
+  <span class="key-word">stage</span> 'Publish artifact':
+    <span class="directive">$artifactory</span> {_repo_clone_target} {_artifactory_url}
+
+  <span class="key-word"><span class="operator">?</span>stage</span> 'Deploy to development env':<span class="pointer medium">8</span>
+    <span class="directive">$deploy ssh {_dev_hosts}</span>
+</pre>
+    </div>
+</body>
+</html>
