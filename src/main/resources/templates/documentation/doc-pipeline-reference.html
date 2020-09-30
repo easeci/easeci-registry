@@ -31,17 +31,36 @@
 
   <span class="key-word">stage</span> 'Unit tests':
     <span class="directive">$mvn</span> test
-    <span class="directive">$bash</span> cp -r target/test-result/* /tmp/logs/
+    <span class="directive">$bash</span> '''<span class="pointer near">8</span>
+         echo 'This is multiline bash script'
+         cp -r target/test-result/* /tmp/logs/
+         echo 'End of script'
+    '''
 
   <span class="key-word">stage</span> 'Building project':
-    <span class="directive">$mvn</span> install
+    <span class="directive">$mvn</span> clean \<span class="pointer medium">9</span>
+         install
 
   <span class="key-word">stage</span> 'Publish artifact':
     <span class="directive">$artifactory</span> {_repo_clone_target} {_artifactory_url}
 
-  <span class="key-word"><span class="operator">?</span>stage</span> 'Deploy to development env':<span class="pointer medium">8</span>
-    <span class="directive">$deploy ssh {_dev_hosts}</span>
+  <span class="key-word"><span class="operator">?</span>stage</span> 'Deploy to development env':<span class="pointer medium">10</span>
+    <span class="directive">$deploy</span> ssh {_dev_hosts}
 </pre>
     </div>
+<div>
+    <ul class="legend-list">
+        <li><span class="pointer">1</span><p class="very-near"></p></li>
+        <li><span class="pointer">2</span><p class="very-near"></p></li>
+        <li><span class="pointer">3</span><p class="very-near"></p></li>
+        <li><span class="pointer">4</span><p class="very-near"></p></li>
+        <li><span class="pointer">5</span><p class="very-near"></p></li>
+        <li><span class="pointer">6</span><p class="very-near"></p></li>
+        <li><span class="pointer">7</span><p class="very-near"></p></li>
+        <li><span class="pointer">8</span><p class="very-near"></p></li>
+        <li><span class="pointer">9</span><p class="very-near"></p></li>
+        <li><span class="pointer">10</span><p class="very-near"></p></li>
+    </ul>
+</div>
 </body>
 </html>

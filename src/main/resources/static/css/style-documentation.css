@@ -81,6 +81,10 @@ pre {
     text-align: center;
 }
 
+.very-near {
+    margin-left: 10px;
+}
+
 .near {
     margin-left: 30px;
 }
@@ -91,4 +95,17 @@ pre {
 
 .far {
     margin-left: 90px;
+}
+
+.legend-list {
+    list-style: none;
+    padding: 10px;
+}
+
+.legend-list li {
+    padding-top: 5px;
+}
+
+.legend-list li p {
+    display: inline;
 }
