@@ -109,3 +109,15 @@ pre {
 .legend-list li p {
     display: inline;
 }
+
+.rule p {
+    text-align: justify;
+}
+
+.rule h1 {
+    font-size: 1.3rem;
+}
+
+.break {
+    margin-top: 30px;
+}

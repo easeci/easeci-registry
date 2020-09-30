@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>EaseDsl</title>
+</head>
+<body>
+    <div>
+        <p>
+            Here you can find Easefile syntax explanation.
+            The Easefile file format is a variation on the yml style with the addition of some Python inspiration (simplicity).
+            In this article, we will describe the syntax of EaseDsl format.
+        </p>
+        <div class="rule">
+            <h1>Keywords</h1>
+            <p>
+                Keywords are marked in green, reserved for EaseDsl. You can use these keywords by enclosing them in quotation marks.
+            </p>
+        </div>
+        <div class="rule">
+            <h1>Directives and '$' character</h1>
+            <p>
+                We have marked the directives in blue. The directive calls the EaseCI Core functionality.
+                We can use directives to call built-in functions in the application and the features that are provided by plugins.
+                Each directive call must be preceded by the dollar sign '$'.
+            </p>
+        </div>
+        <div class="rule">
+            <h1>Colons</h1>
+            <p>
+                The colon may add syntax readability, but in contrary to yml format it isn't required.
+                You don't have to worry about missing this sign.
+            </p>
+        </div>
+        <div class="rule">
+            <h1>Indentations</h1>
+            <p>
+                We recommend that indentation should equal 2 spaces in order to keep your Easefile readable and ease to compare with someone's else files.
+                However, the indentation in contrary to the Python language are not required, your Pipeline will work fine.
+            </p>
+        </div>
+        <div class="rule">
+            <h1>Varables</h1>
+            <p>
+                We use standard variables definition, using the '=' sign.
+                We recommend using python-style notation with '_' as the word separator.
+                We must enclose a variable in quotation marks if it consists of more than one line (and '\' at the end).
+                Variables must be defined after the 'variables' keyword. We can use this keyword anywhere in Easefile.
+                Variables could be global or local. Define variables keyword before some stage to make this variables global,
+                or define variables keyword in specific stage to encapsulate ones.
+            </p>
+        </div>
+        <div class="rule">
+            <h1>Special signs</h1>
+            <ul>
+                <li><p>'\' - use this character at the end of a line to indicate, that a variable or command also includes the next one line of text</p></li>
+                <li><p>''' some text ''' - this way we can enclose a block of text</p></li>
+            </ul>
+        </div>
+        <div class="rule">
+            <h1>Collections</h1>
+            <ul>
+                <li><p>{some_variable} - this is how we use variables</p></li>
+                <li><p>colors = ['red', 'green', 'blue'] - list definition</p></li>
+                <li><p>currencies = {'usa': 'dolar', 'germany': 'euro'} - dictionary definition</p></li>
+                <li><p>colors[0] - get value of item in the index=0 in list</p></li>
+                <li><p>currencies['red'] - get value of 'red' key in dictionary</p></li>
+            </ul>
+        </div>
+
+        <p class="point break">Pipeline file syntax example - Ease DSL in action</p>
+<pre>
+<span class="key-word">pipeline</span>:<span class="pointer medium">1</span>
+  <span class="key-word">executor</span>: auto<span class="pointer medium">2</span>
+  <span class="key-word">variables</span>:<span class="pointer near">3</span>
+    <span class="cursive">_repo_address</span> = https://github.com/easeci/easeci-core-java<span class="pointer near">4</span>
+    <span class="cursive">_repo_clone_target</span> = /var/sources/easeci
+    <span class="cursive">_artifactory_url</span> = https://easeci-artifactory.io
+    <span class="cursive">_dev_hosts</span> = [<span class="pointer near">5</span>
+        '127.0.0.1',
+        '127.0.0.2',
+        '127.0.0.3',
+        '127.0.0.4',
+        '127.0.0.5',
+        '127.0.0.6'
+    ]
+  <span class="key-word">stage</span> 'Prepare building environment':<span class="pointer medium">6</span>
+    <span class="directive">$ssh</span> mkdir -p {_repo_clone_target}<span class="pointer near">7</span>
+
+  <span class="key-word">stage</span> 'Preparation of project building':
+    <span class="directive">$git</span> clone {_repo_address}
+
+  <span class="key-word">stage</span> 'Unit tests':
+    <span class="directive">$mvn</span> test
+    <span class="directive">$bash</span> '''<span class="pointer near">8</span>
+         echo 'This is multiline bash script'
+         cp -r target/test-result/* /tmp/logs/
+         echo 'End of script'
+    '''
+
+  <span class="key-word">stage</span> 'Building project':
+    <span class="directive">$mvn</span> clean \<span class="pointer medium">9</span>
+         install
+
+  <span class="key-word">stage</span> 'Publish artifact':
+    <span class="directive">$artifactory</span> {_repo_clone_target} {_artifactory_url}
+
+  <span class="key-word"><span class="operator">?</span>stage</span> 'Deploy to development env':<span class="pointer medium">10</span>
+    <span class="directive">$deploy</span> ssh {_dev_hosts}
+</pre>
+    </div>
+<div>
+    <ul class="legend-list">
+        <li><span class="pointer">1</span><p class="very-near">Required pipeline keyword. This must be placed in line no. 1</p></li>
+        <li><span class="pointer">2</span>
+            <p class="very-near">
+                Keyword that indicates on which node the pipeline process will be executed.
+                The value 'auto' will let you select the node by the EaseCI algorithm.
+            </p></li>
+        <li><span class="pointer">3</span><p class="very-near">Global pipeline variables block</p></li>
+        <li><span class="pointer">4</span><p class="very-near">Variable definition</p></li>
+        <li><span class="pointer">5</span><p class="very-near">List definition</p></li>
+        <li><span class="pointer">6</span><p class="very-near">Declare first stage with specified name</p></li>
+        <li><span class="pointer">7</span><p class="very-near">Use the '_repo_clone_target' global variable</p></li>
+        <li><span class="pointer">8</span><p class="very-near">Bash script as a block of text</p></li>
+        <li><span class="pointer">9</span><p class="very-near">Next line sign that inform that next part of command is in the new line</p></li>
+        <li><span class="pointer">10</span><p class="very-near">'?' special operator that forces to user confirmation to invoke this step</p></li>
+    </ul>
+</div>
+</body>
+</html>
