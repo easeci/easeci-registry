@@ -59,14 +59,14 @@
 }
 
 .footer {
-    /*text-align: center;*/
-    /*clear: both;*/
-    /*height: 50px;*/
-    width: 72%;
+    position: fixed;
+    left: 0;
     bottom: 0;
-    position: absolute;
-    font-size: 13px;
-    color: #000000ad;
+    width: 100%;
+    color: #93d9f8;
+    text-align: center;
+    font-size: 11px;
+    letter-spacing: 1px;
 }
 
 .nav-container {
