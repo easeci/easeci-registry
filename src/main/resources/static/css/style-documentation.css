@@ -41,6 +41,11 @@ pre {
     color: #1fac1f;
 }
 
+.comment {
+    color: #616d71 !important;
+    font-style: italic;
+}
+
 .string {
     color: #e59a05;
 }
