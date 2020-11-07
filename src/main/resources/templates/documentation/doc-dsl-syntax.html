@@ -67,9 +67,16 @@
                 <li><p>currencies['red'] - get value of 'red' key in dictionary</p></li>
             </ul>
         </div>
+        <div class="rule">
+            <h1>Comments</h1>
+            <ul>
+                <li><p># - python or yaml style comment</p></li>
+            </ul>
+        </div>
 
         <p class="point break">Pipeline file syntax example - Ease DSL in action</p>
 <pre>
+<span class="comment"># This is a comment</span><span class="pointer medium">0</span>
 <span class="key-word">pipeline</span>:<span class="pointer medium">1</span>
   <span class="key-word">executor</span>: auto<span class="pointer medium">2</span>
   <span class="key-word">variables</span>:<span class="pointer near">3</span>
@@ -111,6 +118,7 @@
     </div>
 <div>
     <ul class="legend-list">
+        <li><span class="pointer">0</span><p class="very-near">Comment example</p></li>
         <li><span class="pointer">1</span><p class="very-near">Required pipeline keyword. This must be placed in line no. 1</p></li>
         <li><span class="pointer">2</span>
             <p class="very-near">
