@@ -126,3 +126,31 @@ pre {
 .break {
     margin-top: 30px;
 }
+
+.table-wrapper {
+    padding: 15px;
+    border: 1px solid rgba(0, 0, 0, 0.10);
+}
+
+.specification-table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.specification-table > td, th {
+    text-align: left;
+    min-width: 150px;
+}
+
+.left-indent {
+    padding-left: 20px;
+}
+
+.specification-tag {
+    color: white;
+    border: 1px solid #908cff;
+    display: inline-block;
+    border-radius: 12px;
+    background-color: #908cff;
+    padding: 1px 10px;
+}
