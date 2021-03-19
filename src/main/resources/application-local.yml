@@ -10,8 +10,12 @@ spring:
 
   datasource:
     url: jdbc:postgresql://localhost:5432/easeci
-    username: fenige
-    password: fenige
+    username: postgres
+    password: password
 
 storage:
   dir: /var/ease/registry/
+
+upload:
+  token:
+    quantity-per-day: 100

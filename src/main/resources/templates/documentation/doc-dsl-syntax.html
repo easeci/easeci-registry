@@ -10,15 +10,9 @@
         <p>
             <span class="specification-tag">ECIS-1 specification</span>
             Here you can find Easefile syntax explanation.
-            The Easefile file format is a variation on the yml style with the addition of some Python inspiration (simplicity).
+            The Easefile file format is a equivalent of the YAML style.
             In this article, we will describe the syntax of EaseDsl format.
         </p>
-        <div class="rule">
-            <h1>Keywords</h1>
-            <p>
-                Keywords are marked in green, reserved for EaseDsl. You can use these keywords by enclosing them in quotation marks.
-            </p>
-        </div>
         <div class="rule">
             <h1>Directives and '$' character</h1>
             <p>
@@ -28,114 +22,117 @@
             </p>
         </div>
         <div class="rule">
-            <h1>Colons</h1>
+            <h1>Variables</h1>
             <p>
-                The colon may add syntax readability, but in contrary to yml format it isn't required.
-                You don't have to worry about missing this sign.
-            </p>
-        </div>
-        <div class="rule">
-            <h1>Indentations</h1>
-            <p>
-                We recommend that indentation should equal 2 spaces in order to keep your Easefile readable and ease to compare with someone's else files.
-                However, the indentation in contrary to the Python language are not required, your Pipeline will work fine.
-            </p>
-        </div>
-        <div class="rule">
-            <h1>Varables</h1>
-            <p>
-                We use standard variables definition, using the '=' sign.
+                We use standard variables definition, using the ':' sign.
                 We recommend using python-style notation with '_' as the word separator.
-                We must enclose a variable in quotation marks if it consists of more than one line (and '\' at the end).
                 Variables must be defined after the 'variables' keyword. We can use this keyword anywhere in Easefile.
                 Variables could be global or local. Define variables keyword before some stage to make this variables global,
                 or define variables keyword in specific stage to encapsulate ones.
             </p>
         </div>
         <div class="rule">
-            <h1>Special signs</h1>
-            <ul>
-                <li><p>'\' - use this character at the end of a line to indicate, that a variable or command also includes the next one line of text</p></li>
-                <li><p>''' some text ''' - this way we can enclose a block of text</p></li>
-            </ul>
-        </div>
-        <div class="rule">
-            <h1>Collections</h1>
-            <ul>
-                <li><p>{some_variable} - this is how we use variables</p></li>
-                <li><p>colors = ['red', 'green', 'blue'] - list definition</p></li>
-                <li><p>currencies = {'usa': 'dolar', 'germany': 'euro'} - dictionary definition</p></li>
-                <li><p>colors[0] - get value of item in the index=0 in list</p></li>
-                <li><p>currencies['red'] - get value of 'red' key in dictionary</p></li>
-            </ul>
-        </div>
-        <div class="rule">
             <h1>Comments</h1>
             <ul>
-                <li><p># - python or yaml style comment</p></li>
+                <li><p># - yaml style comment</p></li>
             </ul>
         </div>
 
-        <p class="point break">Pipeline file syntax example - Ease DSL in action</p>
-<pre>
+        <p class="point break">Pipeline file syntax example</p>
+    </div>
+    <div>
+        <pre>
 <span class="comment"># This is a comment</span><span class="pointer medium">0</span>
 <span class="key-word">pipeline</span>:<span class="pointer medium">1</span>
-  <span class="key-word">executor</span>: auto<span class="pointer medium">2</span>
-  <span class="key-word">variables</span>:<span class="pointer near">3</span>
-    <span class="cursive">_repo_address</span> = https://github.com/easeci/easeci-core-java<span class="pointer near">4</span>
-    <span class="cursive">_repo_clone_target</span> = /var/sources/easeci
-    <span class="cursive">_artifactory_url</span> = https://easeci-artifactory.io
-    <span class="cursive">_dev_hosts</span> = [<span class="pointer near">5</span>
-        '127.0.0.1',
-        '127.0.0.2',
-        '127.0.0.3',
-        '127.0.0.4',
-        '127.0.0.5',
-        '127.0.0.6'
-    ]
-  <span class="key-word">stage</span> 'Prepare building environment':<span class="pointer medium">6</span>
-    <span class="directive">$ssh</span> mkdir -p {_repo_clone_target}<span class="pointer near">7</span>
-
-  <span class="key-word">stage</span> 'Preparation of project building':
-    <span class="directive">$git</span> clone {_repo_address}
-
-  <span class="key-word">stage</span> 'Unit tests':
-    <span class="directive">$mvn</span> test
-    <span class="directive">$bash</span> '''<span class="pointer near">8</span>
-         echo 'This is multiline bash script'
-         cp -r target/test-result/* /tmp/logs/
-         echo 'End of script'
-    '''
-
-  <span class="key-word">stage</span> 'Building project':
-    <span class="directive">$mvn</span> clean \<span class="pointer medium">9</span>
-         install
-
-  <span class="key-word">stage</span> 'Publish artifact':
-    <span class="directive">$artifactory</span> {_repo_clone_target} {_artifactory_url}
-
-  <span class="key-word"><span class="operator">?</span>stage</span> 'Deploy to development env':<span class="pointer medium">10</span>
-    <span class="directive">$deploy</span> ssh {_dev_hosts}
-</pre>
+    <span class="key-word">executor</span>:<span class="pointer medium">2</span>
+        <span class="key-word">strategy</span>: auto<span class="pointer medium">3</span>
+        <span class="key-word">names</span>:<span class="pointer medium">4</span>
+            <span class="cursive">- "easefile-node-01-aws"</span>
+            <span class="cursive">- "easefile-node-02-aws"</span>
+        <span class="key-word">nodeUuids</span>:<span class="pointer medium">5</span>
+            <span class="cursive">- "16fd18b6-7169-11eb-9439-0242ac130002"</span>
+            <span class="cursive">- "16fd1af0-7169-11eb-9439-0242ac130002"</span>
+            <span class="cursive">- "16fd2158-7169-11eb-9439-0242ac130002"</span>
+    <span class="key-word">meta</span>:<span class="pointer medium">6</span>
+        <span class="key-word">projectId</span>: <span class="cursive">0</span>
+        <span class="key-word">tag</span>: <span class="cursive">'java maven'</span>
+        <span class="key-word">description</span>: <span class="cursive">'Java project based on Maven, continuous deployment process'</span>
+    <span class="key-word">variables</span>:<span class="pointer medium">7</span>
+        <span class="var-text">_repo_address</span>: <span class="cursive">https://github.com/easeci/easeci-core-java</span>
+        <span class="var-text">_repo_clone_target</span>: <span class="cursive">/var/sources/easeci</span>
+        <span class="var-text">_artifactory_url</span>: <span class="cursive">https://easeci-artifactory.io</span>
+        <span class="var-text">_dev_hosts</span>:
+            <span class="cursive">- '127.0.0.1'</span>
+            <span class="cursive">- '127.0.0.2'</span>
+            <span class="cursive">- '127.0.0.3'</span>
+            <span class="cursive">- '127.0.0.4'</span>
+            <span class="cursive">- '127.0.0.5'</span>
+            <span class="cursive">- '127.0.0.6'</span>
+    <span class="key-word">flow</span>:<span class="pointer medium">8</span>
+        <span class="key-word">- stage</span> <span class="cursive">'Prepare building environment'</span>:<span class="pointer medium">9</span>
+            <span class="key-word">steps</span>:<span class="pointer medium">10</span>
+                <span class="cursive">- <span class="directive">$ssh</span> mkdir -p {_repo_clone_target}</span><span class="pointer medium">11</span>
+        <span class="key-word">- stage</span> <span class="cursive">'Preparation of project building'</span>:
+            <span class="key-word">steps</span>:
+                <span class="cursive">- <span class="directive">$git</span> clone {_repo_address}</span>
+        <span class="key-word">- stage</span> <span class="cursive">'Unit tests'</span>:
+            <span class="key-word">steps</span>:
+                <span class="cursive">- <span class="directive">$mvn</span> test</span>
+                <span class="cursive">- <span class="directive">$bash</span> cp -r target/test-result/* /tmp/logs/</span>
+        <span class="key-word">- stage</span> <span class="cursive">'Building project'</span>:
+            <span class="key-word">steps</span>:
+                <span class="cursive">- <span class="directive">$mvn</span> install</span>
+        <span class="key-word">- stage</span> <span class="cursive">'Publish artifact'</span>:
+            <span class="key-word">steps</span>:
+                <span class="cursive">- <span class="directive">$artifactory</span> {_repo_clone_target} {_artifactory_url}</span>
+        <span class="key-word">- stage</span> <span class="cursive">'Deploy to development env'</span>:
+            <span class="key-word">steps</span>:
+                <span class="cursive">- <span class="directive">$deploy</span> ssh {_dev_hosts}</span>
+        <span class="key-word">- stage</span> <span class="cursive">'Deploy to development env'</span>:
+            <span class="key-word">variables</span>:
+                <span class="cursive">log_dir: /tmp/logs/</span><span class="pointer near">12</span>
+            <span class="key-word">steps</span>:
+                <span class="cursive">- <span class="directive">$bash</span> '''</span><span class="pointer near">13</span>
+                     echo 'This is multiline bash script'
+                     cp -r target/test-result/* {log_dir}
+                     echo 'End of script'
+                '''
+        </pre>
     </div>
-<div>
-    <ul class="legend-list">
-        <li><span class="pointer">0</span><p class="very-near">Comment example</p></li>
-        <li><span class="pointer">1</span><p class="very-near">Required pipeline keyword. This must be placed in line no. 1</p></li>
-        <li><span class="pointer">2</span>
-            <p class="very-near">
-                Keyword that indicates on which node the pipeline process will be executed.
-                The value 'auto' will let you select the node by the EaseCI algorithm.
-            </p></li>
-        <li><span class="pointer">3</span><p class="very-near">Global pipeline variables block</p></li>
-        <li><span class="pointer">4</span><p class="very-near">Variable definition</p></li>
-        <li><span class="pointer">5</span><p class="very-near">List definition</p></li>
-        <li><span class="pointer">6</span><p class="very-near">Declare first stage with specified name</p></li>
-        <li><span class="pointer">7</span><p class="very-near">Use the '_repo_clone_target' global variable</p></li>
-        <li><span class="pointer">8</span><p class="very-near">Bash script as a block of text</p></li>
-        <li><span class="pointer">9</span><p class="very-near">Next line sign that inform that next part of command is in the new line</p></li>
-        <li><span class="pointer">10</span><p class="very-near">'?' special operator that forces to user confirmation to invoke this step</p></li>
-    </ul>
-</div>
+    <div>
+        <ul class="legend-list">
+            <li><span class="pointer">0</span><p class="very-near">Comment example</p></li>
+            <li><span class="pointer">1</span><p class="very-near">Easefile type definition</p></li>
+            <li><span class="pointer">2</span>
+                <p class="very-near">
+                    This section is responsible for defining where a given pipeline should run.
+                    You can specify here executing strategy, nodes, group of nodes etc.
+                </p></li>
+            <li><span class="pointer">3</span><p class="very-near">This parameter defines how the pipeline will be executed and on which nodes</p></li>
+            <li><span class="pointer">4</span><p class="very-near">Defining nodes with names/aliases</p></li>
+            <li><span class="pointer">5</span><p class="very-near">Defining nodes with UUID of node</p></li>
+            <li><span class="pointer">6</span><p class="very-near">Additional information describing the pipeline</p></li>
+            <li><span class="pointer">7</span><p class="very-near">Definition of the variables available in the scope of the current file</p></li>
+            <li><span class="pointer">8</span><p class="very-near">The crucial part in which we declare the next steps of the pipeline workflow</p></li>
+            <li><span class="pointer">9</span><p class="very-near">First stage with name, you can define many of stages in single Easefile</p></li>
+            <li><span class="pointer">10</span><p class="very-near">Each stage have steps, you can define many steps for one stage</p></li>
+            <li><span class="pointer">11</span><p class="very-near">Invoke of directive ssh (you need to use '$' prefix)</p></li>
+            <li><span class="pointer">12</span><p class="very-near">Local variables declaration. Variables declared in this place will be visible only in 'Deploy to development env' stage</p></li>
+            <li><span class="pointer">13</span><p class="very-near">Example of plain bash script execution</p></li>
+        </ul>
+    </div>
+    <div class="reference-section">
+        <h2>Easefile parts reference</h2>
+        <p>
+            In this section, we will look at each part of Easefile in detail and describe
+            the possible fields and values in detail.
+        </p>
+        <div class="rule">
+            <h1>Executor</h1>
+            <p>
+                Lorem ipsum dolor sit amet, consectetur adipisicing elit. Adipisci alias, animi beatae consectetur deleniti, dolores eaque est excepturi exercitationem facere laborum perspiciatis, tempore unde. Earum eius eveniet saepe sunt voluptatem.
+            </p>
+        </div>
+    </div>
 </body>
 </html>

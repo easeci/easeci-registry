@@ -41,6 +41,10 @@ pre {
     color: #1fac1f;
 }
 
+.value {
+    color: #62bf62;
+}
+
 .comment {
     color: #616d71 !important;
     font-style: italic;
@@ -52,6 +56,7 @@ pre {
 
 .directive {
     color: #2f54b8;
+    font-weight: bold;
 }
 
 .operator {
@@ -153,4 +158,9 @@ pre {
     border-radius: 12px;
     background-color: #908cff;
     padding: 1px 10px;
+}
+
+.reference-section {
+    margin-top: 60px;
+    margin-bottom: 80px;
 }
