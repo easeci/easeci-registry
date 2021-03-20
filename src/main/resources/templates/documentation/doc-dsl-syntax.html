@@ -128,10 +128,62 @@
             the possible fields and values in detail.
         </p>
         <div class="rule">
-            <h1>Executor</h1>
+            <h1 class="property">Executor</h1>
             <p>
-                Lorem ipsum dolor sit amet, consectetur adipisicing elit. Adipisci alias, animi beatae consectetur deleniti, dolores eaque est excepturi exercitationem facere laborum perspiciatis, tempore unde. Earum eius eveniet saepe sunt voluptatem.
+                <span class="property-required">Required property.</span>
+                If your Easefile does not contain an executor section it will be rejected.
+                The executor property is used to define the entire way of executing our pipeline. With this part of Easefile, we can take control of which EaseCI servers the pipeline will run on.
             </p>
+            <table class="properties-table">
+                <tbody>
+                    <tr class="properties-table-header">
+                        <th>Property name</th>
+                        <th>Description</th>
+                    </tr>
+                    <!-- tr bellow is one, main property description -->
+                    <tr>
+                        <td>
+                            <p class="property">strategy</p>
+                        </td>
+                        <td>
+                            <p>
+                                This property is used to determine how the algorithm will select nodes to execute your pipeline.
+                                If you do not specify the type of strategy explicitly, it will be set to <span class="property minor">AUTO</span>.
+                            </p>
+                            <ul class="properties-list">
+                                <li><p><span class="property minor">AUTO</span> executes pipeline at any idling instance - ignoring all nodeUuids and names</p></li>
+                                <li><p><span class="property minor">MASTER</span> executes pipeline only on master instance - ignoring all nodeUuids and names</p></li>
+                                <li><p><span class="property minor">ONE_OF</span> executes pipeline on any typed instance in nodeUuids or names</p></li>
+                                <li><p><span class="property minor">EACH</span> execute pipeline on every typed instance in nodeUuids or names</p></li>
+                            </ul>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <p class="property">nodeUuids</p>
+                        </td>
+                        <td>
+                            <p>
+                                Unique node identifier. This is the standard UUID format. Here you can declare your nodes that have previously been set up in your EaseCI instance.
+                                <span class="property minor">nodeUuids</span> property has higher priority that <span class="property minor">names</span> property,
+                                so if you write in your Easefile both nodeUuids and names, only nodeUuids will take.
+                                <br>Data type: list of UUIDs
+                            </p>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <p class="property">names</p>
+                        </td>
+                        <td>
+                            <p>
+                                You can give aliases for your nodes. With these aliases you can declare which nodes should run the pipeline.
+                                <br>Data type: list of strings
+                            </p>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
         </div>
     </div>
 </body>
