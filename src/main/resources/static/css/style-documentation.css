@@ -202,3 +202,7 @@ pre {
     color: #e11919b0;
     font-weight: bold;
 }
+
+.horizontal-space {
+    margin-top: 4vh;
+}

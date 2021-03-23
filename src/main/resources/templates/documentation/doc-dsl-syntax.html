@@ -185,6 +185,72 @@
                 </tbody>
             </table>
         </div>
+        <div class="rule horizontal-space">
+            <h1 class="property">Metadata </h1>
+            <p>
+                <span class="property-required">Optional property.</span>
+                The 'meta:' section is used for additional parameterization and configuration of our Pipeline.
+                This part of Easefile is optional, it does not need to be used.
+                In the future, many different extensions and new features are being considered with which Pipeline can be parameterized even more.
+            </p>
+            <table class="properties-table">
+                <tbody>
+                    <tr class="properties-table-header">
+                        <th>Property name</th>
+                        <th>Description</th>
+                    </tr>
+                    <!-- tr bellow is one, main property description -->
+                    <tr>
+                        <td>
+                            <p class="property">projectId</p>
+                        </td>
+                        <td>
+                            <p>
+                                Default value for this field equals to '0' (zero). Then current Pipeline created from this Easefile will be put to
+                                Default 'Other' Project. You can create Project by REST API or by configuration file in future.
+                                Then project will have projectId that you can use here in <span class="property minor">projectId</span> property.
+                                Please be advice that Easefile will be rejected if projectId not exists in EaseCI instance at this moment.
+                                <br>Data type: numeric
+                            </p>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <p class="property">name</p>
+                        </td>
+                        <td>
+                            <p>
+                                The name helps you identify Pipeline among many files and makes it easier to navigate in your projects.
+                                <br>Data type: string
+                            </p>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <p class="property">tag</p>
+                        </td>
+                        <td>
+                            <p>
+                                The tag, like the name, helps you identify Pipelin and makes it easier to navigate through your projects.
+                                Thanks to the tag you can group and sort your Pipeline.
+                                <br>Data type: string
+                            </p>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <p class="property">description</p>
+                        </td>
+                        <td>
+                            <p>
+                                You can give a description to your Pipeline, thanks to which the user will be able to quickly find out what the Pipeline is for.
+                                <br>Data type: text
+                            </p>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
     </div>
 </body>
 </html>
