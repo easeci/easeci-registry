@@ -206,3 +206,8 @@ pre {
 .horizontal-space {
     margin-top: 4vh;
 }
+
+.no-margin-bottom {
+    margin-bottom: 0;
+    padding-bottom: 0;
+}
