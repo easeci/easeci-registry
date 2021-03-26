@@ -186,7 +186,7 @@
             </table>
         </div>
         <div class="rule horizontal-space">
-            <h1 class="property">Metadata </h1>
+            <h1 class="property">Metadata</h1>
             <p>
                 <span class="property-required">Optional property.</span>
                 The 'meta:' section is used for additional parameterization and configuration of our Pipeline.
@@ -250,6 +250,35 @@
                     </tr>
                 </tbody>
             </table>
+        </div>
+        <div class="rule horizontal-space">
+            <h1 class="property">Variables</h1>
+            <p>
+                <span class="property-required">Optional property.</span>
+                There are 3 variable scopes in EaseCI. Thanks to variables, you don't have to hardcode values directly in directive commands or elsewhere.
+            </p>
+            <h6 class="no-margin-bottom">We have the following types of variables scopes:</h6>
+            <ul class="properties-list">
+                <li><p><span class="property minor">Global scope</span> values that we set globally work across the entire scope of the system</p></li>
+                <li><p>
+                    <span class="property minor">Easefile scope</span> we can set this type of variables in the main 'variables:' property (indentation, in line with 'meta:' or 'executors:'),
+                    they can be used in the entire Easefile</p>
+                </li>
+                <li><p><span class="property minor">Stage scope</span> these variables will be visible only for the given Stage in which they were declared</p></li>
+            </ul>
+            <p>
+                <span class="property minor">Stage scope</span> variables have the highest priority.
+                If the Easefile parser cannot find the variables in the given Stage,
+                it will look for this variable in <span class="property minor">Easefile scope</span> and then in <span class="property minor">Global scope</span>.
+                If the variable is not found, you will receive an error notification.
+            </p>
+            <h6 class="no-margin-bottom">We have the following types of variables:</h6>
+            <ul class="properties-list">
+                <li><p><span class="property minor">NUMBER</span> numeric value, both a fixed point and a floating point value</p></li>
+                <li><p><span class="property minor">STRING</span> UTF-8 character string</p></li>
+                <li><p><span class="property minor">LIST</span> list of values</p></li>
+                <li><p><span class="property minor">DICTIONARY</span> a nested key-value object</p></li>
+            </ul>
         </div>
     </div>
 </body>
