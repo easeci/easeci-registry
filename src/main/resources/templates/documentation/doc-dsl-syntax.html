@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" xmlns:th="http://www.w3.org/1999/xhtml">
 <head>
     <meta charset="UTF-8">
     <link href="../css/style-documentation.css" rel="stylesheet">
@@ -69,34 +69,40 @@
             <span class="cursive">- '127.0.0.5'</span>
             <span class="cursive">- '127.0.0.6'</span>
     <span class="key-word">flow</span>:<span class="pointer medium">8</span>
-        <span class="key-word">- stage</span> <span class="cursive">'Prepare building environment'</span>:<span class="pointer medium">9</span>
+        <span class="key-word">-</span>
+            <span class="key-word">stage_name</span>: <span class="cursive">'Prepare building environment'</span>:<span class="pointer medium">9</span>
             <span class="key-word">steps</span>:<span class="pointer medium">10</span>
                 <span class="cursive">- <span class="directive">$ssh</span> mkdir -p {_repo_clone_target}</span><span class="pointer medium">11</span>
-        <span class="key-word">- stage</span> <span class="cursive">'Preparation of project building'</span>:
+        <span class="key-word">-</span>
+            <span class="key-word">stage_name</span>: <span class="cursive">'Preparation of project building'</span>:
             <span class="key-word">steps</span>:
                 <span class="cursive">- <span class="directive">$git</span> clone {_repo_address}</span>
-        <span class="key-word">- stage</span> <span class="cursive">'Unit tests'</span>:
+        <span class="key-word">-</span>
+            <span class="key-word">stage_name</span>: <span class="cursive">'Unit tests'</span>:
             <span class="key-word">steps</span>:
                 <span class="cursive">- <span class="directive">$mvn</span> test</span>
                 <span class="cursive">- <span class="directive">$bash</span> cp -r target/test-result/* /tmp/logs/</span>
-        <span class="key-word">- stage</span> <span class="cursive">'Building project'</span>:
+        <span class="key-word">-</span>
+            <span class="key-word">stage_name</span>: <span class="cursive">'Building project'</span>:
             <span class="key-word">steps</span>:
                 <span class="cursive">- <span class="directive">$mvn</span> install</span>
-        <span class="key-word">- stage</span> <span class="cursive">'Publish artifact'</span>:
+        <span class="key-word">-</span>
+            <span class="key-word">stage_name</span>: <span class="cursive">'Publish artifact'</span>:
             <span class="key-word">steps</span>:
                 <span class="cursive">- <span class="directive">$artifactory</span> {_repo_clone_target} {_artifactory_url}</span>
-        <span class="key-word">- stage</span> <span class="cursive">'Deploy to development env'</span>:
+        <span class="key-word">-</span>
+            <span class="key-word">stage_name</span>: <span class="cursive">'Deploy to development env'</span>:
             <span class="key-word">steps</span>:
                 <span class="cursive">- <span class="directive">$deploy</span> ssh {_dev_hosts}</span>
-        <span class="key-word">- stage</span> <span class="cursive">'Deploy to development env'</span>:
-            <span class="key-word">variables</span>:
+        <span class="key-word">-</span>
+            <span class="key-word">stage_name</span>: <span class="cursive">'Deploy to development env'</span>:
+            <span class="key-word">stage_variables</span>:
                 <span class="cursive">log_dir: /tmp/logs/</span><span class="pointer near">12</span>
             <span class="key-word">steps</span>:
-                <span class="cursive">- <span class="directive">$bash</span> '''</span><span class="pointer near">13</span>
+                <span class="cursive">- |- <span class="directive">$bash</span></span><span class="pointer near">13</span>
                      echo 'This is multiline bash script'
                      cp -r target/test-result/* {log_dir}
                      echo 'End of script'
-                '''
         </pre>
     </div>
     <div>
@@ -279,6 +285,88 @@
                 <li><p><span class="property minor">LIST</span> list of values</p></li>
                 <li><p><span class="property minor">DICTIONARY</span> a nested key-value object</p></li>
             </ul>
+        </div>
+        <div class="rule horizontal-space">
+            <div>
+                <h1 class="property">Flow</h1>
+                <p>
+                    <span class="property-required">Required property.</span>
+                    The <span class="property minor">'flow:'</span> component is the most important part of Easefile because it defines all steps, to perform during Pipeline startup.
+                    You can write a sequence of steps starting by fetching the source code from the Git server, then compiling the project and
+                    deliver a ready, production version for servers in the production environment.
+                    At each step, we must use directives that are preceded by the '$' sign.
+                    Thanks to that we refer to a specific part of the system or an externally delivered component called 'Performer'.
+                    Performer will provide appropriate instructions that the EaseCI engine will execute in the isolated application container.
+                    In the official documentation, you can only find descriptions for the default Performers.
+                    For performers delivered by independent developers, documentation is available at the website listed in the Performer file repository.
+                </p>
+            </div>
+            <div>
+                <p>
+                    <span class="property minor">flow</span> is simple list of stages. Building flow is extremely simple.
+                    <span class="property minor">Flow</span> is just a list of objects - that we call <span class="property minor">stage</span>
+                    The order of execution of tasks (stages) will be the same as the order of objects in the flow list.
+                    <span class="property minor">Flow</span> can declare any number of stages.
+                </p>
+            </div>
+            <table class="properties-table">
+                <tbody>
+                <tr class="properties-table-header">
+                    <th>Property name</th>
+                    <th>Description</th>
+                </tr>
+                <tr>
+                    <td>
+                        <p class="property">stage</p>
+                    </td>
+                    <td>
+                        <p>
+                            Each stage object in the list must contain at least two properties: <span class="property minor">stage_name</span> and <span class="property minor">steps</span>
+                        </p>
+                        <p>Possible properties of <span class="property minor">stage</span> are listed bellow:</p>
+                        <table class="properties-table">
+                            <tbody>
+                                <tr class="properties-table-header">
+                                    <th>Property name</th>
+                                    <th>Description</th>
+                                </tr>
+                                <!-- tr bellow is one, main property description -->
+                                <tr>
+                                    <td>
+                                        <p class="property">stage_name</p>
+                                    </td>
+                                    <td>
+                                        <p><span class="property minor">stage</span> name as a simple string<br></p>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <p class="property">steps</p>
+                                    </td>
+                                    <td>
+                                        <p>
+                                            <span class="property minor">steps</span> is a simple list string.
+                                            Each string must contain a directive declaration and the parameters of the directive that performer invoked by directive can handle.
+                                            A list of steps will be performed in the right order for a given stage.<br>
+                                            The syntax for one <span class="property minor">steps</span> element consists of a directive (1) and parameters (2) as it is shown bellow.
+                                        </p>
+                                        <img th:src="@{../../images/directive.png}"  title="Example of step syntax">
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <p class="property">stage_variables</p>
+                                    </td>
+                                    <td>
+                                        <p>List of variables that are valid only for a given stage scope</p>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
         </div>
     </div>
 </body>
