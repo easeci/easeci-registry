@@ -25,10 +25,16 @@
             <h1>Variables</h1>
             <p>
                 We use standard variables definition, using the ':' sign.
-                We recommend using python-style notation with '_' as the word separator.
-                Variables must be defined after the 'variables' keyword. We can use this keyword anywhere in Easefile.
-                Variables could be global or local. Define variables keyword before some stage to make this variables global,
-                or define variables keyword in specific stage to encapsulate ones.
+                We recommend using notation with '_' as the word separator.
+                Variables must be defined after the 'variables' keyword. We can use this keyword in <span class="property minor">pipeline:</span> property of Easefile or in concrete Stage before steps declaration.
+                Variables could have 3 different scopes: global, easefile, stage. The order of resolving variable is in effect.
+                Resolving of variables is triggered each time a given Pipeline is started.
+            </p>
+            <p>
+                The highest priority have variables defined in stage scope in <span class="property minor">stage_variables:</span> property.
+                If variable is not defined in stage scope, interpreter then takes the variables from Easefile.
+                If variable is not defined in Easefile scope then interpreter search for global variable.
+                After these steps if variable was not found in any of these scopes, Pipeline execution is stopped and appropriate communicate is logged.
             </p>
         </div>
         <div class="rule">
@@ -72,11 +78,11 @@
         <span class="key-word">-</span>
             <span class="key-word">stage_name</span>: <span class="cursive">'Prepare building environment'</span>:<span class="pointer medium">9</span>
             <span class="key-word">steps</span>:<span class="pointer medium">10</span>
-                <span class="cursive">- <span class="directive">$ssh</span> mkdir -p {_repo_clone_target}</span><span class="pointer medium">11</span>
+                <span class="cursive">- <span class="directive">$ssh</span> mkdir -p {{_repo_clone_target}}</span><span class="pointer medium">11</span>
         <span class="key-word">-</span>
             <span class="key-word">stage_name</span>: <span class="cursive">'Preparation of project building'</span>:
             <span class="key-word">steps</span>:
-                <span class="cursive">- <span class="directive">$git</span> clone {_repo_address}</span>
+                <span class="cursive">- <span class="directive">$git</span> clone {{_repo_address}}</span>
         <span class="key-word">-</span>
             <span class="key-word">stage_name</span>: <span class="cursive">'Unit tests'</span>:
             <span class="key-word">steps</span>:
@@ -89,11 +95,11 @@
         <span class="key-word">-</span>
             <span class="key-word">stage_name</span>: <span class="cursive">'Publish artifact'</span>:
             <span class="key-word">steps</span>:
-                <span class="cursive">- <span class="directive">$artifactory</span> {_repo_clone_target} {_artifactory_url}</span>
+                <span class="cursive">- <span class="directive">$artifactory</span> {{_repo_clone_target}} {{_artifactory_url}}</span>
         <span class="key-word">-</span>
             <span class="key-word">stage_name</span>: <span class="cursive">'Deploy to development env'</span>:
             <span class="key-word">steps</span>:
-                <span class="cursive">- <span class="directive">$deploy</span> ssh {_dev_hosts}</span>
+                <span class="cursive">- <span class="directive">$deploy</span> ssh {{_dev_hosts}}</span>
         <span class="key-word">-</span>
             <span class="key-word">stage_name</span>: <span class="cursive">'Deploy to development env'</span>:
             <span class="key-word">stage_variables</span>:
@@ -101,7 +107,7 @@
             <span class="key-word">steps</span>:
                 <span class="cursive">- |- <span class="directive">$bash</span></span><span class="pointer near">13</span>
                      echo 'This is multiline bash script'
-                     cp -r target/test-result/* {log_dir}
+                     cp -r target/test-result/* {{log_dir}}
                      echo 'End of script'
         </pre>
     </div>
