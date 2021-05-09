@@ -1,0 +1,41 @@
+<!doctype html>
+<html lang="en" xmlns:th="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <link href="../css/style.css" rel="stylesheet">
+    <link href="../css/style-documentation.css" rel="stylesheet">
+    <link href="../webjars/bootstrap/4.3.1/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css?family=Poppins&display=swap" rel="stylesheet">
+    <script src="../webjars/bootstrap/4.3.1/js/bootstrap.min.js"></script>
+    <title>Extensions development introduction</title>
+</head>
+<body class="wrapper">
+<header th:insert="fragments/menu-bar.html :: header"></header>
+    <div class="documentation-container">
+        <h1 class="page-title">Extensions development introduction</h1>
+        <div>
+            <p>
+                W EaseCI dostępne są dwa różne rodzaje rozszerzeń.
+                Między innymi główne typy rozszerzeń, którymi mogą być zainteresowani programiści to:
+            </p>
+            <ul>
+                <li><span class="property minor">STANDALONE_PLUGIN</span></li>
+                <li><span class="property minor">DIRECTIVE_PLUGIN</span></li>
+            </ul>
+            <p>
+                <span class="property minor">STANDALONE_PLUGIN</span> jest to typ pluginu, który po dołączeniu do aplikacji EaseCI będzie działał jako część funkcjonalności programu.
+                Dzięki temu typowi rozszerzeń możemy na przykład dodać nowe endpointy do backendu aplikacji, dodać zadania CRON, które będą wykonywały
+                określone funkcje czy rozszerzymy lub zmienimy działanie istniejących domyślnie algorytmów EaseCI.
+            </p>
+            <p>
+                <span class="property minor">DIRECTIVE_PLUGIN</span> jest to znany nam już Performer. Tą nazwą określamy program, który umożliwia wykonywanie jakiejś akcji podczas
+                wykonania Pipeline. Taki Performer może zostać wywołany za pomocą deklaracji w pliku Easefile.
+                Przykładami takich Perforerów są easeci-git, easeci-artifactory, easeci-ssh etc.
+            </p>
+        </div>
+    </div>
+<div class="footer" th:insert="fragments/footer.html :: footer"></div>
+</body>
+</html>

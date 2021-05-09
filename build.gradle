@@ -26,7 +26,8 @@ dependencies {
 	implementation('org.springframework.boot:spring-boot-starter-jdbc')
 	implementation('org.springframework.boot:spring-boot-starter-security')
 	implementation('org.springframework.boot:spring-boot-starter-mail')
-	compile group: 'io.vavr', name: 'vavr', version: '0.10.3'
+    implementation 'org.projectlombok:lombok:1.18.18'
+    compile group: 'io.vavr', name: 'vavr', version: '0.10.3'
 	compile group: 'org.thymeleaf.extras', name: 'thymeleaf-extras-springsecurity5', version: '3.0.4.RELEASE'
 	compile group: 'org.postgresql', name: 'postgresql', version: '42.2.8'
 	compileOnly 'org.projectlombok:lombok'

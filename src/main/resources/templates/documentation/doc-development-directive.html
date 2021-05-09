@@ -1,0 +1,202 @@
+<!doctype html>
+<html lang="en" xmlns:th="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <link href="../css/style.css" rel="stylesheet">
+    <link href="../css/style-documentation.css" rel="stylesheet">
+    <link href="../webjars/bootstrap/4.3.1/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css?family=Poppins&display=swap" rel="stylesheet">
+    <link rel="preconnect" href="https://fonts.gstatic.com">
+    <link href="https://fonts.googleapis.com/css2?family=Inconsolata:wght@200&display=swap" rel="stylesheet">
+    <script src="../webjars/bootstrap/4.3.1/js/bootstrap.min.js"></script>
+    <title>Directive development</title>
+</head>
+<body class="wrapper">
+<header th:insert="fragments/menu-bar.html :: header"></header>
+    <div class="documentation-container">
+        <h1 class="page-title">Directive development</h1>
+        <div style="margin-bottom: 100px">
+            <p>
+                <span class="specification-tag">ECIS-2 specification</span> określa w jaki sposób programiści mogą rozwijać swoje własne rozszerzenia,
+                które będą sprawnie działać i rozszerzać lub dodawać nowe funkcjonalności w EaseCI. W tym artykule opiszemy jak możemy przystąpić
+                do rozwijania naszego własnego rozszerzenia.
+            </p>
+            <div class="rule">
+                <h1>Czym jest dyrektywa?</h1>
+                <p>
+                    Dyrektywa w EaseCI to wskaźnik na dany Performer, dzięki któremu możemy zadeklarować jakąś akcję.
+                    Więcej o użyciu dyrektyw możesz przeczytać tutaj: <a th:href="@{/documentation/dsl-syntax}">Easefile syntax</a>.
+                    Tworząc nowe dyrektywy możesz je udostępniać do użycia za pomocą EaseCI registry, lub zachować je do użytku prywatnego.
+                    Wiemy już zatem czym jest Performer i że możemy go wywoływać za pomocą dyrektywy.
+                    Dyrektywę wywołujemy za pomoc znaku dolara oraz nazwy Performera np. <span class="property minor">$git</span>
+                </p>
+            </div>
+            <div class="rule">
+                <h1>Stwórzmy naszą prostą dyrektywę!</h1>
+                <p>
+                    Przejdziemy teraz krok po kroku przez tworzenie Performera, którego wywołamy za pomocą dyrektywy.
+                    Nasz Performer będzie nazywał się 'logo-printer' i będzie on miał za zadanie po prostu wydrukowanie
+                    na ekranie terminala logo EaseCI Core. Oprócz wywołania dyrektywy podamy parametry,
+                    będzie to imię i nazwisko twórcy Performera, które zostanie wydrukowane razem z logo na ekranie.
+                    Po poprawnym wykonaniu naszego zadania, będziemy mogli wywołać Performer za pomocą polecenia:
+                </p>
+                <pre class="code">$logo-printer print authorName: 'John', authorSurname: 'Doe', date: '2021'</pre>
+                <p class="minor-header">Zaczynajmy!</p>
+                <p>
+                    Pierwszy krok to pobranie kodu EaseCI core z repozytorium dostępnego tutaj: <a href="https://github.com/easeci/easeci-core-java">EaseCI core project</a>
+                    W przykładach używamy terminala systemu Ubuntu.
+                </p>
+                <pre class="code">git clone https://github.com/easeci/easeci-core-java.git</pre>
+                <p>
+                    Następnie jak już mamy nasz kod na lokalnym dysku, powinniśmy mieć mniej więcej taką strukturę plików:
+                </p>
+                <pre>
+karol@karol-xps:~/dev/easeci-core-java$ ls -l
+-rw-rw-r--  1 karol karol  2862 mar 27 20:21 build.gradle
+-rw-rw-r--  1 karol karol   971 gru  2 17:49 Dockerfile
+drwxrwxr-x  3 karol karol  4096 gru  2 17:49 docs
+drwxrwxr-x  5 karol karol  4096 lut 15 22:40 domain
+-rw-rw-r--  1 karol karol   307 gru  2 17:49 easeci.service
+drwxrwxr-x  3 karol karol  4096 gru  2 17:49 gradle
+-rwxrwxr-x  1 karol karol  4962 gru  2 17:49 gradlew
+-rw-rw-r--  1 karol karol  2260 gru  2 17:49 gradlew.bat
+drwxrwxr-x  5 karol karol  4096 lut 15 22:40 io-lib
+-rw-rw-r--  1 karol karol 11357 gru  2 17:49 LICENSE
+-rw-rw-r--  1 karol karol  2664 gru  2 17:49 README.md
+-rw-rw-r--  1 karol karol   203 kwi 24 18:02 settings.gradle
+drwxrwxr-x  4 karol karol  4096 gru  2 17:49 src
+-rw-rw-r--  1 karol karol  1079 gru  3 20:42 Vagrantfile
+                </pre>
+                <p>
+                    W katalogu, który wylistowałem na górze, tworzymy nasz projekt. Konwencja nazewnicza jest taka: easeci-{performerName} i zalecamy jej używać.
+                    Zatem tworzymy katalog i strukturę naszego projektu.
+                </p>
+                <pre>
+mkdir -p easeci-logo-printer/src/main/java && \
+mkdir -p easeci-logo-printer/src/test/java && \
+mkdir -p easeci-logo-printer/src/main/resources && \
+mkdir -p easeci-logo-printer/src/test/resources && \
+mkdir -p easeci-logo-printer/src/main/java/io/easeci/logo/printer && \
+touch easeci-logo-printer/src/main/java/io/easeci/logo/printer/LogoPrinterPerformer.java && \
+touch easeci-logo-printer/build.gradle
+                </pre>
+                <p>
+                    Następnie jak już mamy strukturę projektu, musimy wyedytować nasze pliki.
+                    Po pierwsze, edytujemy build.gradle tak, żeby wyglądał jak poniżej:
+                </p>
+                <pre>
+plugins {
+    id 'java'
+}
+
+group 'io.easeci'
+version '0.0.1'
+
+sourceCompatibility = '11'
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    compile project(':domain')
+}
+
+jar {
+    manifest {
+        attributes(
+                'Class-Path': configurations.compile.collect { it.getName() }.join(' '),
+                'Main-Class': "${mainClassName}",
+                'Implements': 'io.easeci.extension.command.Directive',
+                'Entry-Class': 'io.easeci.logo.printer.LogoPrinterPerformer'
+        )
+    }
+    from {
+        configurations.compile.collect { it.isDirectory() ? it : zipTree(it) }
+    }
+}
+                </pre>
+                <p>
+                    To jest prosty skrypt informujący Gradle w jaki sposób ma budować nasz plugin.
+                    Podaliśmy w tym pliku atrybuty takie jak: <span class="code">'Implements': 'io.easeci.extension.command.Directive'</span> - jest to deklaracja,
+                    że nasz plugin będzie implementował ten interfejs pochodzący z modułu :domain.
+                    <br>
+                    Inny atrybut to <span class="code">'Entry-Class': 'io.easeci.logo.printer.LogoPrinterPerformer'</span> - to jest po prostu ścieżka do naszej klasy,
+                    która implementuje powyżej wspomniany interfejs.
+                </p>
+                <p>
+                    Potrzebujemy jeszcze dodać nasz moduł do pliku <span class="code">settings.gradle</span>.
+                    Dlatego wyedytujmy ten plik, powinien on wyglądać tak:
+                </p>
+                <pre>
+rootProject.name = 'easeci-core'
+include 'domain'
+include 'io-lib'
+include 'easeci-logo-printer'
+                </pre>
+                <p>
+                    Na sam koniec musimy dodać treść do naszej głównej klasy Java.
+                    Otwórzmy i wyedytujmy plik <span class="code">easeci-logo-printer/src/main/java/io/easeci/logo/printer/LogoPrinterPerformer.java</span>,
+                    powinien on wyglądać jak poniżej:
+                </p>
+                <pre>
+package io.easeci.logo.printer;
+
+import io.easeci.extension.command.Command;
+import io.easeci.extension.command.CommandParameter;
+import io.easeci.extension.command.Directive;
+import io.easeci.extension.command.VariableType;
+import io.easeci.extension.directive.CodeChunk;
+import io.easeci.extension.directive.CodeLanguage;
+
+import java.util.List;
+
+public class LogoPrinterPerformer implements Directive {
+
+    @Override
+    public String getDirectiveName() {
+        return "logo-printer";
+    }
+
+    @Override
+    public List<Command> getAvailableCommandList() throws IllegalAccessException {
+        return List.of(Command.of("print",
+                List.of(
+                        CommandParameter.of(VariableType.STRING, "authorName"),
+                        CommandParameter.of(VariableType.STRING, "authorSurname"),
+                        CommandParameter.of(VariableType.STRING, "date")
+                )));
+    }
+
+    @Override
+    public CodeChunk provideCode(String parameters) throws IllegalAccessException {
+        String authorName = "John";
+        String authorSurname = "Doe";
+        String date = "2021";
+        final String code = "print(\" ~ developed by " + authorName + " " + authorSurname + " " + date + "\")";
+        return CodeChunk.of(0, getDirectiveName(), CodeLanguage.PYTHON_3, code, "UTF-8");
+    }
+}
+                </pre>
+                <p>
+                    To wszystko, teraz możemy uruchomić budowanie naszego projektu za pomocą Gradle.
+                </p>
+                <pre>
+./gradlew build
+                </pre>
+                <p>
+                    Po ukończeniu procesu budowania z sukcesem powinniśmy w katalogu naszego projektu zobaczyć katalog <span class="code">easeci-logo-printer/build</span>.
+                    W tym katalogu możemy znaleźć nasz plik .jar przechodząc do <span class="code">easeci-logo-printer/build/libs/easeci-logo-printer-0.0.1.jar</span>.
+                </p>
+                <p>
+                    To wszystko. Przeszliśmy krok po kroku przez proces stworzenia zaczątków naszego pluginu.
+                    W celu użycia pluginu w swojej instancji EaseCI zapoznaj się z: <a th:href="@{/documentation/development-uploading}">Plugin uploading</a>
+                </p>
+            </div>
+        </div>
+    </div>
+    <div class="footer" th:insert="fragments/footer.html :: footer"></div>
+</body>
+</html>

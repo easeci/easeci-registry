@@ -30,6 +30,7 @@
     display: inline-block;
     width: 74%;
     float: right;
+    margin-bottom: 100px;
 }
 
 pre {
@@ -165,8 +166,8 @@ pre {
     margin-bottom: 200px;
 }
 
-.properties-table {
-
+.properties-table td th {
+    padding:0 15px;
 }
 
 .properties-table-header {
@@ -210,4 +211,27 @@ pre {
 .no-margin-bottom {
     margin-bottom: 0;
     padding-bottom: 0;
+}
+
+.code {
+    background-color: #eeeeee;
+    font-family: 'Inconsolata', monospace;
+}
+
+.minor-header {
+    font-size: 13px;
+    font-weight: bold;
+}
+
+.method-doc-header {
+    display: inline-block;
+    width: 100%;
+    text-align: center;
+    padding: 5px 15px 5px 15px;
+    background-color: #dfecfb;
+    font-weight: bold;
+}
+
+.table-separator {
+    border-bottom: 1px solid #0000005c;
 }

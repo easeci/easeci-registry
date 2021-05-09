@@ -1,0 +1,50 @@
+<!doctype html>
+<html lang="en" xmlns:th="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <link href="../css/style.css" rel="stylesheet">
+    <link href="../css/style-documentation.css" rel="stylesheet">
+    <link href="../webjars/bootstrap/4.3.1/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css?family=Poppins&display=swap" rel="stylesheet">
+    <link rel="preconnect" href="https://fonts.gstatic.com">
+    <link href="https://fonts.googleapis.com/css2?family=Inconsolata:wght@200&display=swap" rel="stylesheet">
+    <script src="../webjars/bootstrap/4.3.1/js/bootstrap.min.js"></script>
+    <title>Extension installation</title>
+</head>
+<body class="wrapper">
+<header th:insert="fragments/menu-bar.html :: header"></header>
+<div class="documentation-container">
+    <h1 class="page-title">Extension installation</h1>
+    <div style="margin-bottom: 100px">
+        <p>
+            W tym artykule opiszemy w jaki sposób możemy zainstalować nasze rozszerzenie, pobierając je EaseCI Registry.
+        </p>
+        <div class="rule">
+            <h1>Przegląd rozszerzeń</h1>
+            <p>
+                Pod linkiem: <a th:href="@{/performers}">Extensions</a> możesz przejrzeć wszystkie dostępne rozszerzenia,
+                które zostały opublikowane w EaseCI Registry.
+            </p>
+            <h1>Jak zainstalować extension w instancji EaseCI Core?</h1>
+            <p>
+                Wystarczy, że otworzysz plik w swoim <span class="minor-header">workspace</span> o nazwie <span class="code">plugins.yml</span>
+                <br>Do właściwości <span class="minor-header">extensions</span> dodajemy nowy element listy:
+            </p>
+            <pre>
+extensions:
+  - plugin:
+      name: artifactory
+      version: 1.0.0
+            </pre>
+            <p>
+                Możemy dodawać dowolną listę extensions dowolnych rodzajów.
+                W celu sprawdzenia, jakie mamy zainstalowane rozszerzenia w naszej instancji, użyj endpointu REST API: <span class="code">GET {easeci_core_address}/plugin/directives</span>
+            </p>
+        </div>
+    </div>
+</div>
+<div class="footer" th:insert="fragments/footer.html :: footer"></div>
+</body>
+</html>
