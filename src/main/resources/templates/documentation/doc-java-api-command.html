@@ -1,0 +1,35 @@
+<div>
+    <div>
+        <a th:href="@{/documentation/java-api-main}">&#11013; back</a>
+    </div>
+    <div class="rule horizontal-space">
+        <h1 class="property">Command</h1>
+        <p class="code">io.easeci.extension.command.Command</p>
+        <p>
+            Obiekt, który reprezentuje komendę, którą możemy wywoływać np. <span class="code">$git clone</span> - w tym przykładzie
+            to <span class="code">clone</span> jest nazwą komendy.
+        </p>
+        <table class="properties-table">
+            <tbody>
+            <tr class="properties-table-header">
+                <th>Field name</th>
+                <th>Field Type</th>
+                <th>Field Description</th>
+            </tr>
+
+            <tr class="table-separator">
+                <td><p class="property">commandName</p></td>
+                <td><p>String</p></td>
+                <td><p>Nazwa komendy, przez którą możemy zadeklarować działanie danego Performera</p></td>
+            </tr>
+
+            <tr class="table-separator">
+                <td><p class="property">commandParameterList</p></td>
+                <td><p><a th:href="@{/documentation/java-api-commandParameter}">CommandParameter[]</a></p></td>
+                <td><p>Parametry, wartości jakie możemy przekazać używając danej Dyrektywy</p></td>
+            </tr>
+
+            </tbody>
+        </table>
+    </div>
+</div>

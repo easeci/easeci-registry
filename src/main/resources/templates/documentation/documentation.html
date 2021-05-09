@@ -29,12 +29,16 @@
                 <li><a th:href="@{/documentation/introduction}">Quick start</a></li>
                 <li><a th:href="@{/documentation/dsl-syntax}">Ease DSL syntax</a></li>
                 <li><p>Deal with Plugins</p></li>
-                <li><a th:href="@{/documentation/introduction}">Plugin installation</a></li>
-                <li><a th:href="@{/documentation/introduction}">Simple plugin development</a></li>
-                <li><a th:href="@{/documentation/prerequisites}">Plugins uploading</a></li>
                 <li><a th:href="@{/documentation/prerequisites}">Plugins downloading</a></li>
+                <li><a th:href="@{/documentation/extension-installation}">Plugin installation</a></li>
+                <li><p>For developers</p></li>
+                <li><a th:href="@{/documentation/development-introduction}">Development introduction</a></li>
+                <li><a th:href="@{/documentation/development-directive}">Directive development</a></li>
+                <li><a th:href="@{/documentation/introduction}">Standalone plugin development</a></li>
+                <li><a th:href="@{/documentation/development-uploading}">Plugins uploading</a></li>
                 <li><p>EaseCI Specification</p></li>
                 <li><a th:href="@{/documentation/ecis-index}">ECIS index</a></li>
+                <li><a th:href="@{/documentation/java-api-main}">Java API docs</a></li>
             </ul>
         </div>
         <div th:insert="documentation/doc-__${article}__.html :: div" class="article-content">

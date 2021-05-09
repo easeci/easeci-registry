@@ -1,0 +1,52 @@
+<div>
+    <div>
+        <a th:href="@{/documentation/java-api-main}">&#11013; back</a>
+    </div>
+    <div class="rule horizontal-space">
+        <h1 class="property">CodeChunk</h1>
+        <p class="code">io.easeci.extension.directive.CodeChunk</p>
+        <p>
+
+        </p>
+        <table class="properties-table">
+            <tbody>
+            <tr class="properties-table-header">
+                <th>Field name</th>
+                <th>Field Type</th>
+                <th>Field Description</th>
+            </tr>
+
+            <tr class="table-separator">
+                <td><p class="property">order</p></td>
+                <td><p>int</p></td>
+                <td><p>Porządek w jakim będzie wykonany kod z tego obiektu. Wartość jest zignorowana, bo EaseCI Core ustala kolejność</p></td>
+            </tr>
+
+            <tr class="table-separator">
+                <td><p class="property">directiveName</p></td>
+                <td><p>String</p></td>
+                <td><p>Nazwa dyrektywy</p></td>
+            </tr>
+
+            <tr class="table-separator">
+                <td><p class="property">language</p></td>
+                <td><p><a th:href="@{/documentation/java-api-codeLanguage}">CodeLanguage</a></p></td>
+                <td><p>Język w jakim został napisany skrypt w polu <span class="code">code</span></p></td>
+            </tr>
+
+            <tr class="table-separator">
+                <td><p class="property">code</p></td>
+                <td><p>String</p></td>
+                <td><p>Kod wyprodukowany przez nasze rozszerzenie na podstawie wprowadzonych parametrów</p></td>
+            </tr>
+
+            <tr class="table-separator">
+                <td><p class="property">encoding</p></td>
+                <td><p>String</p></td>
+                <td><p>System kodowania fragmentu skryptu z pola <span class="code">code</span>, na przykład <span class="code">UTF-8</span></p></td>
+            </tr>
+
+            </tbody>
+        </table>
+    </div>
+</div>

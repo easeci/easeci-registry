@@ -1,0 +1,82 @@
+<!doctype html>
+<html lang="en" xmlns:th="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <link href="../css/style.css" rel="stylesheet">
+    <link href="../css/style-documentation.css" rel="stylesheet">
+    <link href="../webjars/bootstrap/4.3.1/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css?family=Poppins&display=swap" rel="stylesheet">
+    <link rel="preconnect" href="https://fonts.gstatic.com">
+    <link href="https://fonts.googleapis.com/css2?family=Inconsolata:wght@200&display=swap" rel="stylesheet">
+    <script src="../webjars/bootstrap/4.3.1/js/bootstrap.min.js"></script>
+    <title>Extension upload</title>
+</head>
+<body class="wrapper">
+<header th:insert="fragments/menu-bar.html :: header"></header>
+    <div class="documentation-container">
+        <h1 class="page-title">Extension upload</h1>
+        <div style="margin-bottom: 100px">
+            <p>
+                W tym artykule opiszemy w jaki sposób możemy udostępnić nasze rozszerzenie, publikując je w EaseCI Registry.
+                Skupimy się na opublikowaniu naszego pliku .jar, który zbudowaliśmy w poprzedniej sekcji.
+                Jeżeli nie zapoznałeś się jak zbudować własne rozszerzenie typu DIRECTIVE, zobacz tutaj: <a th:href="@{/documentation/development-directive}">Directive Development</a>
+            </p>
+        <div class="rule">
+            <h1>Upload własnego extension</h1>
+            <p>Co potrzebuję do opublikowania rozszerzenia w Registry?</p>
+            <ul>
+                <li>Własnego, zarejestrowanego profilu na EaseCI Registry</li>
+                <li>Pobranego Tokenu z EaseCI Registry</li>
+                <li>Własnego projektu rozszerzenia o prawidłowej strukturze</li>
+            </ul>
+            <p>
+                Jeżeli nie zarejestrowałeś jeszcze swojego konta, przechodzimy na stronę <a th:href="@{/registration}">Registration</a>,
+                a jeśli masz już konto, zaloguj się <a th:href="@{/login}">Login</a>.
+            </p>
+            <p>
+                Jeżeli poprawnie się zalogowaliśmy na nasz profil, przechodzimy na stronę <a th:href="@{/development}">EaseCI Registry Development</a>
+                i klikamy link <span>Get token</span>. Następnie klikamy przycisk <span>Grab token</span>.
+                Powinien się pojawić unikalny token, który będzie identyfikował jedno, unikalne rozszerzenie. Skopiujmy ten token, aby nie został utracony.
+            </p>
+            <p>
+                Po zbudowaniu naszego projektu, powinniśmy mieć plik .jar jak w poprzednim artykule: <span class="code">easeci-logo-printer/build/libs/easeci-logo-printer-0.0.1.jar</span>.<br>
+                Otwieramy plik .jar i szukamy pliku <span class="code">MANIFEST.md</span>, który powinien znajdować się w ścieżce: <span class="code">easeci-logo-printer-0.0.1.jar/META-INF/MANIFEST.md</span><br>
+                Dodajemy na końcu pliku nową właściwość <span class="code">Token:</span> (wielkość liter ma znaczenie).<br>
+                Finalnie, plik powinien wyglądać w ten sposób (właściwość Token: podświetlona na zielono):
+            </p>
+            <pre>
+Manifest-Version: 1.0
+Class-Path: domain-0.0.1-SNAPSHOT.jar groovy-2.4.10.jar ratpack-core-1.8
+ .0.jar ratpack-exec-1.8.0.jar netty-handler-proxy-4.1.48.Final.jar nett
+ y-codec-http-4.1.48.Final.jar netty-handler-4.1.48.Final.jar javax.acti
+ vation-1.2.0.jar caffeine-2.8.1.jar javassist-3.22.0-GA.jar jackson-dat
+ atype-guava-2.10.3.jar jackson-datatype-jdk8-2.10.3.jar jackson-datatyp
+ e-jsr310-2.10.3.jar jackson-databind-2.10.3.jar jackson-dataformat-yaml
+ -2.10.3.jar snakeyaml-1.23.jar ratpack-base-1.8.0.jar slf4j-api-1.7.30.
+ jar netty-transport-native-epoll-4.1.48.Final-linux-x86_64.jar netty-co
+ dec-socks-4.1.48.Final.jar netty-codec-4.1.48.Final.jar netty-transport
+ -native-unix-common-4.1.48.Final.jar netty-transport-4.1.48.Final.jar n
+ etty-buffer-4.1.48.Final.jar netty-tcnative-2.0.30.Final-linux-x86_64.j
+ ar reactive-streams-1.0.2.jar netty-resolver-4.1.48.Final.jar netty-com
+ mon-4.1.48.Final.jar checker-qual-3.1.0.jar guava-28.2-jre.jar error_pr
+ one_annotations-2.3.4.jar jackson-annotations-2.10.3.jar jackson-core-2
+ .10.3.jar failureaccess-1.0.1.jar listenablefuture-9999.0-empty-to-avoi
+ d-conflict-with-guava.jar jsr305-3.0.2.jar j2objc-annotations-1.3.jar
+Main-Class: io.easeci.EaseciCoreApplication
+Implements: io.easeci.extension.command.Directive
+Entry-Class: io.easeci.artifactory.ArtifactoryPerformer
+<span class="key-word">Token: YmMwOTE0YjgtOTQyNS00N2E5LTk2OTYtYjIzZDA4OWM1NjEx</span>
+            </pre>
+            <p>
+                Zapisujemy plik, mamy już wszystko przygotowane. Przechodzimy ponownie do: <a th:href="@{/development}">EaseCI Registry Development</a>
+                i tym razem klikamy <span>Upload</span>. Wypełniamy formularz, wskazujemy nasz plik <span class="code">easeci-logo-printer-0.0.1.jar</span>.
+                To wszystko. Otrzymamy komunikat czy publikowanie rozszerzenia się udało i dostaniemy możliwość dodania artykułu opisującego nasze rozszerzenie.
+            </p>
+        </div>
+        </div>
+    </div>
+    <div class="footer" th:insert="fragments/footer.html :: footer"></div>
+</body>
+</html>

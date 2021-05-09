@@ -1,0 +1,106 @@
+<div>
+    <div>
+        <a th:href="@{/documentation/java-api-main}">&#11013; back</a>
+    </div>
+    <div class="rule horizontal-space">
+        <h1 class="property">Directive</h1>
+        <p class="code">io.easeci.extension.command.Directive</p>
+        <p>
+
+        </p>
+        <table class="properties-table">
+            <tbody>
+            <tr class="properties-table-header">
+                <th>Method name</th>
+                <th>Method Description</th>
+            </tr>
+            <!-- tr bellow is one, main property description -->
+            <tr class="table-separator">
+                <td>
+                    <p class="property">getDirectiveName()</p>
+                </td>
+                <td>
+                    <p>
+                        <span class="method-doc-header">Method description</span>
+                        Ta metoda musi zwracać nazwę dyrektywy. Jeżeli w Easefile chcemy wywoływać dyrektywę za pomocą <span class="code">$git</span>,
+                        to metoda musi zwracać wartość: <span class="code">git</span> lub <span class="code">$git</span>
+                    </p>
+
+                    <p>
+                        <span class="method-doc-header">Method arguments</span>
+                        -
+                    </p>
+
+                    <p>
+                        <span class="method-doc-header">Method returns</span>
+                        Metoda zwraca nazwę dyrektywy
+                    </p>
+                </td>
+            </tr>
+
+            <tr class="table-separator">
+                <td>
+                    <p class="property">getAvailableCommandList()</p>
+                </td>
+                <td>
+                    <p>
+                        <span class="method-doc-header">Method description</span>
+                        Metoda zwraca wszystkie dostępne komendy jakie użytkownik Performera będzie mógł użyć w deklaracji Pipeline'u w Easefile.
+                        Dostępną komendę, możemy użyć tak: <span class="code">$git clone</span>.
+                        W tym przykładzie to właśnie <span class="code">clone</span> jest jedną z command.
+                    </p>
+
+                    <p>
+                        <span class="method-doc-header">Method arguments</span>
+                        -
+                    </p>
+
+                    <p>
+                        <span class="method-doc-header">Method returns</span>
+                        Returns list of <a th:href="@{/documentation/java-api-command}">Command[]</a> objects
+                    </p>
+                </td>
+            </tr>
+
+            <tr class="table-separator">
+                <td>
+                    <p class="property">provideCode(String parameters)</p>
+                </td>
+                <td>
+                    <p>
+                        <span class="method-doc-header">Method description</span>
+                        Jest to kluczowa metoda tego interfejsu. Kiedy użytkownik użyje tą dyrektywę, EaseCI Core wywoła tą metodę
+                        w celu pozyskania kawałka kodu w języku skryptowym np. Python, który będzie dalej wykonany w procesie wykonywania Pipeline'u.
+                    </p>
+
+                    <p>
+                        <span class="method-doc-header">Method arguments</span>
+                    </p>
+                    <table class="properties-table">
+                        <tbody>
+                            <tr class="properties-table-header">
+                                <th>Field name</th>
+                                <th>Field Type</th>
+                                <th>Field Description</th>
+                            </tr>
+
+                            <tr class="table-separator">
+                                <td><p class="property">parameters</p></td>
+                                <td><p>String</p></td>
+                                <td><p>To wszystkie parametry jakie użytkownik podał w wywołaniu konkretnej dyrektywy w pliku Easefile</p></td>
+                            </tr>
+
+                        </tbody>
+                    </table>
+
+                    <p>
+                        <span class="method-doc-header">Method returns</span>
+                        Returns <a th:href="@{/documentation/java-api-codeChunk}">CodeChunk</a>
+                    </p>
+                </td>
+            </tr>
+
+            </tbody>
+        </table>
+    </div>
+</div>

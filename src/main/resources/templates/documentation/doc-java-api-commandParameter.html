@@ -1,0 +1,41 @@
+<div>
+    <div>
+        <a th:href="@{/documentation/java-api-main}">&#11013; back</a>
+    </div>
+    <div class="rule horizontal-space">
+        <h1 class="property">CommandParameter</h1>
+        <p class="code">io.easeci.extension.command.CommandParameter</p>
+        <p>
+            Obiekt, który reprezentuje wartość, którą możemy przekazać wywołując dyrektywę.
+            <span class="code">$git clone branch:master</span> w tym przykładzie to <span class="code">branch:master</span> jest użyciem parametru komendy.
+        </p>
+        <table class="properties-table">
+            <tbody>
+            <tr class="properties-table-header">
+                <th>Field name</th>
+                <th>Field Type</th>
+                <th>Field Description</th>
+            </tr>
+
+            <tr class="properties-table-header">
+                <td>parameterName</td>
+                <td>String</td>
+                <td>Nazwa parametru</td>
+            </tr>
+
+            <tr class="properties-table-header">
+                <td>parameterValue</td>
+                <td>String</td>
+                <td>Wartość parametru</td>
+            </tr>
+
+            <tr class="properties-table-header">
+                <td>parameterType</td>
+                <td><a th:href="@{/documentation/java-api-variableType}">VariableType</a></td>
+                <td>Typ parametru</td>
+            </tr>
+
+            </tbody>
+        </table>
+    </div>
+</div>
