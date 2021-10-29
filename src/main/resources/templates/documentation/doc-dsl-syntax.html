@@ -105,7 +105,8 @@
             <span class="key-word">stage_variables</span>:
                 <span class="cursive">log_dir: /tmp/logs/</span><span class="pointer near">12</span>
             <span class="key-word">steps</span>:
-                <span class="cursive">- |- <span class="directive">$bash</span></span><span class="pointer near">13</span>
+                <span class="cursive">- |-
+                    <span class="directive">$bash</span></span><span class="pointer near">13</span>
                      echo 'This is multiline bash script'
                      cp -r target/test-result/* {{log_dir}}
                      echo 'End of script'
