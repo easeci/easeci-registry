@@ -154,7 +154,7 @@ class PerformerManagerServiceTest {
         final String PLUGIN_VERSION = "0.0.5";
 
         PerformerVersionRepository localVersionRepository = Mockito.mock(PerformerVersionRepository.class);
-        PerformerManagerService localService = new PerformerManagerService(null, null, localVersionRepository, null);
+        PerformerManagerService localService = new PerformerManagerService(null, null, localVersionRepository, null, null);
 
         Mockito.when(localVersionRepository.findAllByPerformerName(PLUGIN_NAME))
                 .thenReturn(provide());
@@ -171,7 +171,7 @@ class PerformerManagerServiceTest {
         final String PLUGIN_VERSION = "0.0.6";
 
         PerformerVersionRepository localVersionRepository = Mockito.mock(PerformerVersionRepository.class);
-        PerformerManagerService localService = new PerformerManagerService(null, null, localVersionRepository, null);
+        PerformerManagerService localService = new PerformerManagerService(null, null, localVersionRepository, null, null);
 
         Mockito.when(localVersionRepository.findAllByPerformerName(PLUGIN_NAME))
                 .thenReturn(provide());
@@ -188,7 +188,7 @@ class PerformerManagerServiceTest {
         final String PLUGIN_VERSION = "0.0.6";
 
         PerformerVersionRepository localVersionRepository = Mockito.mock(PerformerVersionRepository.class);
-        PerformerManagerService localService = new PerformerManagerService(null, null, localVersionRepository, null);
+        PerformerManagerService localService = new PerformerManagerService(null, null, localVersionRepository, null, null);
 
         boolean hasNewestVersion = localService.hasPluginNewestVersion(PLUGIN_NAME, PLUGIN_VERSION);
 
@@ -202,7 +202,7 @@ class PerformerManagerServiceTest {
         final String PLUGIN_VERSION = "0.0.6";
 
         PerformerVersionRepository localVersionRepository = Mockito.mock(PerformerVersionRepository.class);
-        PerformerManagerService localService = new PerformerManagerService(null, null, localVersionRepository, null);
+        PerformerManagerService localService = new PerformerManagerService(null, null, localVersionRepository, null, null);
 
         Mockito.when(localVersionRepository.findAllByPerformerName(PLUGIN_NAME))
                 .thenReturn(provide());
@@ -219,7 +219,7 @@ class PerformerManagerServiceTest {
         final String PLUGIN_VERSION = "0.0.6";
 
         PerformerVersionRepository localVersionRepository = Mockito.mock(PerformerVersionRepository.class);
-        PerformerManagerService localService = new PerformerManagerService(null, null, localVersionRepository, null);
+        PerformerManagerService localService = new PerformerManagerService(null, null, localVersionRepository, null, null);
 
         Mockito.when(localVersionRepository.findAllByPerformerName(PLUGIN_NAME))
                 .thenReturn(provide());
@@ -236,7 +236,7 @@ class PerformerManagerServiceTest {
         final String PLUGIN_NAME = "git";
 
         PerformerVersionRepository localVersionRepository = Mockito.mock(PerformerVersionRepository.class);
-        PerformerManagerService localService = new PerformerManagerService(null, null, localVersionRepository, null);
+        PerformerManagerService localService = new PerformerManagerService(null, null, localVersionRepository, null, null);
 
         Mockito.when(localVersionRepository.findAllByPerformerName(PLUGIN_NAME))
                 .thenReturn(provide());

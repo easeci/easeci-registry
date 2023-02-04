@@ -10,7 +10,7 @@ spring:
 
   datasource:
     url: jdbc:postgresql://localhost:5432/easeci
-    username: postgres
+    username: easeci
     password: password
 
 storage:

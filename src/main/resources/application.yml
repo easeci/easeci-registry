@@ -34,7 +34,7 @@ activation:
 
 endpoints:
   opened:
-    - "/"
+    - "/**"
     - "/registration"
     - "/activation"
     - "/performers"
