@@ -3,7 +3,7 @@ package org.easeci.registry.domain.plugin;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import javax.validation.constraints.NotNull;
+import jakarta.validation.constraints.NotNull;
 
 import static java.util.Optional.ofNullable;
 

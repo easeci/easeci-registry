@@ -1,5 +1,6 @@
 package org.easeci.registry.domain.api;
 
+import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.easeci.registry.domain.api.dto.LoginRequest;
@@ -12,8 +13,6 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
-
-import javax.validation.Valid;
 
 import java.security.Principal;
 
